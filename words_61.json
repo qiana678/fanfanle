@@ -1,0 +1,111 @@
+{
+  "6-1": {
+    "label": "六年级·上",
+    "units": {
+      "1": [
+        {"en": "more than", "zh": "超过"},
+        {"en": "thousand", "zh": "一千"},
+        {"en": "kilometre", "zh": "千米，公里"},
+        {"en": "something", "zh": "某事物，某种东西"},
+        {"en": "million", "zh": "百万"},
+        {"en": "map", "zh": "地图"},
+        {"en": "right", "zh": "正确的"},
+        {"en": "country", "zh": "国家"}
+      ],
+      "2": [
+        {"en": "dancing", "zh": "跳舞，舞蹈"},
+        {"en": "Chinatown", "zh": "唐人街，中国城"},
+        {"en": "sometimes", "zh": "有时"},
+        {"en": "shop", "zh": "商店"},
+        {"en": "then", "zh": "既然是这样，那么"},
+        {"en": "ah", "zh": "啊"},
+        {"en": "strong", "zh": "坚固的"}
+      ],
+      "3": [
+        {"en": "collect", "zh": "收集"},
+        {"en": "stamp", "zh": "邮票"},
+        {"en": "hobby", "zh": "业余爱好"},
+        {"en": "doll", "zh": "玩具娃娃"},
+        {"en": "bicycle", "zh": "自行车"}
+      ],
+      "4": [
+        {"en": "Thanksgiving", "zh": "感恩节"},
+        {"en": "Thanksgiving Day", "zh": "感恩节"},
+        {"en": "flag", "zh": "旗；国旗"},
+        {"en": "Flag Day", "zh": "(美国)国旗制定纪念日"},
+        {"en": "fly", "zh": "（使）（旗帜）飘扬"},
+        {"en": "special", "zh": "特殊的，特别的"},
+        {"en": "meal", "zh": "餐"},
+        {"en": "sound", "zh": "听起来"},
+        {"en": "football", "zh": "（美式）橄榄球"},
+        {"en": "moon cake", "zh": "月饼"},
+        {"en": "the Mid-Autumn Festival", "zh": "中秋节"},
+        {"en": "the Dragon Boat Festival", "zh": "端午节"},
+        {"en": "race", "zh": "比赛，竞赛"},
+        {"en": "lantern", "zh": "灯笼"},
+        {"en": "the Lantern Festival", "zh": "元宵节"},
+        {"en": "hang", "zh": "悬挂，吊"}
+      ],
+      "5": [
+        {"en": "pen friend", "zh": "笔友"},
+        {"en": "Pleased to meet you!", "zh": "很高兴见到你！"},
+        {"en": "address", "zh": "地址"},
+        {"en": "French", "zh": "法语"},
+        {"en": "age", "zh": "年龄"},
+        {"en": "story", "zh": "故事"},
+        {"en": "candy", "zh": "糖果"}
+      ],
+      "6": [
+        {"en": "world", "zh": "世界"},
+        {"en": "often", "zh": "经常"},
+        {"en": "difficult", "zh": "困难的"},
+        {"en": "knife", "zh": "餐刀；刀子"},
+        {"en": "fork", "zh": "叉；餐叉"},
+        {"en": "chopsticks", "zh": "（常复）筷子"},
+        {"en": "Japanese", "zh": "日本的"}
+      ],
+      "7": [
+        {"en": "believe", "zh": "相信"},
+        {"en": "snake", "zh": "蛇"},
+        {"en": "DVD", "zh": "数字化视频光盘，DVD光盘"},
+        {"en": "together", "zh": "一起，共同"},
+        {"en": "lucky", "zh": "幸运的"},
+        {"en": "bamboo", "zh": "竹子"},
+        {"en": "its", "zh": "它的"},
+        {"en": "body", "zh": "身体"},
+        {"en": "come out of", "zh": "从……中出来"},
+        {"en": "flute", "zh": "笛子"},
+        {"en": "get", "zh": "变得，变成"},
+        {"en": "frightened", "zh": "恐惧的，害怕的"}
+      ],
+      "8": [
+        {"en": "long ago", "zh": "很久以前"},
+        {"en": "I'd love to", "zh": "我很乐意"},
+        {"en": "not really", "zh": "不全是，事实上没有"},
+        {"en": "stop", "zh": "（使）停止"},
+        {"en": "clean", "zh": "打扫，（使）清洁"},
+        {"en": "camera", "zh": "照相机"},
+        {"en": "show", "zh": "把……给（某人）看"},
+        {"en": "never", "zh": "从不"}
+      ],
+      "9": [
+        {"en": "around", "zh": "在四周，到处"},
+        {"en": "all around", "zh": "到处，遍及"},
+        {"en": "member state", "zh": "成员国"},
+        {"en": "inside", "zh": "向室内，向里面"},
+        {"en": "should", "zh": "应该"}
+      ],
+      "10": [
+        {"en": "line", "zh": "（等候的）长队，队列"},
+        {"en": "stand in line", "zh": "排队"},
+        {"en": "close", "zh": "关门，关闭"},
+        {"en": "librarian", "zh": "图书馆管理员"},
+        {"en": "rule", "zh": "规定，规章"},
+        {"en": "quiet", "zh": "安静的"},
+        {"en": "problem", "zh": "麻烦，困难，问题"},
+        {"en": "No problem", "zh": "没问题"},
+        {"en": "cross", "zh": "穿过（马路等）；渡过（河）"}
+      ]
+    }
+  }
+}

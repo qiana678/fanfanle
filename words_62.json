@@ -1,0 +1,131 @@
+{
+  "6-2": {
+    "label": "六年级·下",
+    "units": {
+      "1": [
+        {"en": "look", "zh": "看上去"},
+        {"en": "cashier", "zh": "收银员"},
+        {"en": "cola", "zh": "可乐"},
+        {"en": "dollar", "zh": "美元"},
+        {"en": "cent", "zh": "美分"},
+        {"en": "enjoy", "zh": "享用，享受"},
+        {"en": "careful", "zh": "小心的"},
+        {"en": "Be careful", "zh": "当心！"}
+      ],
+      "2": [
+        {"en": "later", "zh": "后来，以后"},
+        {"en": "to go", "zh": "剩余"},
+        {"en": "duck", "zh": "鸭子"},
+        {"en": "pond", "zh": "水池，池塘"},
+        {"en": "cloud", "zh": "云"},
+        {"en": "dry", "zh": "干的"},
+        {"en": "like", "zh": "像……一样"},
+        {"en": "look like", "zh": "看来好像"},
+        {"en": "stay", "zh": "保持，维持"}
+      ],
+      "3": [
+        {"en": "shine", "zh": "（太阳）发光，照耀"},
+        {"en": "cry", "zh": "哭"},
+        {"en": "everyone", "zh": "人人，每人，大家"},
+        {"en": "fly away", "zh": "飞走"},
+        {"en": "just", "zh": "就，且请"},
+        {"en": "cow", "zh": "奶牛"},
+        {"en": "blow", "zh": "吹，刮"},
+        {"en": "rabbit", "zh": "兔子"}
+      ],
+      "4": [
+        {"en": "balloon", "zh": "气球"},
+        {"en": "stairs", "zh": "（常复）楼梯"},
+        {"en": "mess", "zh": "肮脏；凌乱"}
+      ],
+      "5": [
+        {"en": "play", "zh": "演奏，弹奏（音乐）"},
+        {"en": "third", "zh": "第三（个）"},
+        {"en": "time", "zh": "次，回"},
+        {"en": "bark", "zh": "（狗）吠，叫"},
+        {"en": "loudly", "zh": "大声地"},
+        {"en": "nothing", "zh": "没有东西，没有事情"}
+      ],
+      "6": [
+        {"en": "home", "zh": "回家"},
+        {"en": "got", "zh": "（get的过去式）得到，收到"},
+        {"en": "space", "zh": "太空"},
+        {"en": "interested", "zh": "感兴趣的"},
+        {"en": "spaceship", "zh": "宇宙飞船"},
+        {"en": "finish", "zh": "结束，完成"},
+        {"en": "decide", "zh": "决定"},
+        {"en": "paper", "zh": "纸做的，纸质的"},
+        {"en": "brought", "zh": "（bring的过去式）拿来，带来"},
+        {"en": "bring back", "zh": "带回"},
+        {"en": "model", "zh": "模型"},
+        {"en": "taikonaut", "zh": "（中国的）太空人，宇航员"},
+        {"en": "first", "zh": "最初（的），第一次（的）"},
+        {"en": "national", "zh": "国家的，民族的"},
+        {"en": "seed", "zh": "种子"}
+      ],
+      "7": [
+        {"en": "spent", "zh": "（spend的过去式）度过"},
+        {"en": "about", "zh": "大约"},
+        {"en": "flew", "zh": "（fly的过去式）飞，飞行"},
+        {"en": "October", "zh": "十月"},
+        {"en": "video", "zh": "录像"},
+        {"en": "proud", "zh": "感到自豪的，感到骄傲的"},
+        {"en": "someday", "zh": "有朝一日"},
+        {"en": "born", "zh": "出生，诞生"},
+        {"en": "as", "zh": "作为"},
+        {"en": "became", "zh": "（become的过去式）变成"},
+        {"en": "letter", "zh": "字母"},
+        {"en": "spell", "zh": "拼写，拼出"},
+        {"en": "herself", "zh": "她自己"},
+        {"en": "all over", "zh": "到处，遍及，处处"},
+        {"en": "live", "zh": "活着"},
+        {"en": "role model", "zh": "模范，榜样"}
+      ],
+      "8": [
+        {"en": "cup", "zh": "杯子"},
+        {"en": "planned", "zh": "（plan的过去式）计划"},
+        {"en": "baseball", "zh": "棒球"},
+        {"en": "more", "zh": "更强烈的"},
+        {"en": "smile", "zh": "微笑"},
+        {"en": "mistake", "zh": "错误"},
+        {"en": "make mistakes", "zh": "犯错误"},
+        {"en": "with", "zh": "与……有关"},
+        {"en": "said", "zh": "（say的过去式）说"},
+        {"en": "raincoat", "zh": "雨衣"}
+      ],
+      "9": [
+        {"en": "wish", "zh": "愿望，希望，祝，祝愿"},
+        {"en": "best wishes", "zh": "最美好的祝愿"},
+        {"en": "primary", "zh": "小学的，初等的"},
+        {"en": "message", "zh": "留言；消息"},
+        {"en": "keep", "zh": "留言；保存"},
+        {"en": "forever", "zh": "永远"},
+        {"en": "joy", "zh": "乐事，乐趣"},
+        {"en": "future", "zh": "未来"},
+        {"en": "wonderful", "zh": "了不起的，出色的"},
+        {"en": "happiness", "zh": "幸福，愉快"},
+        {"en": "what", "zh": "多么"}
+      ],
+      "10": [
+        {"en": "middle", "zh": "中间的，中等的"},
+        {"en": "middle school", "zh": "中学"},
+        {"en": "speech", "zh": "演说，讲演"},
+        {"en": "classmate", "zh": "同班同学"},
+        {"en": "leave", "zh": "离开"},
+        {"en": "September", "zh": "九月"},
+        {"en": "excited", "zh": "激动的，兴奋的"},
+        {"en": "geography", "zh": "地理"},
+        {"en": "same", "zh": "相同的"},
+        {"en": "at the same time", "zh": "同时"},
+        {"en": "spoke", "zh": "（speak的过去式）说（某种语言）"},
+        {"en": "little", "zh": "极少量的"},
+        {"en": "keep on", "zh": "保持"},
+        {"en": "practise", "zh": "练习"},
+        {"en": "sometime", "zh": "某个时候"},
+        {"en": "each other", "zh": "互相，彼此"},
+        {"en": "chemistry", "zh": "化学"},
+        {"en": "physics", "zh": "物理"}
+      ]
+    }
+  }
+}

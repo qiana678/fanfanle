@@ -1,0 +1,8242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>外研英语翻翻乐 · 后端词库版</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(145deg, #f5edfa 0%, #e3d5ef 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      margin: 0;
+    }
+
+    .game-container {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 48px 48px 32px 32px;
+      padding: 20px 16px 28px;
+      box-shadow: 0 20px 60px rgba(100, 60, 140, 0.25), 0 8px 24px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: all 0.2s;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 0 4px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6b4c8a, #a77bcb);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header h1 small {
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(160, 120, 200, 0.2);
+      padding: 2px 12px;
+      border-radius: 40px;
+      color: #4d2e6b;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .level-badge {
+      background: #ffffffcc;
+      backdrop-filter: blur(4px);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #4d2e6b;
+      box-shadow: 0 4px 10px rgba(110, 70, 140, 0.08);
+      border: 1px solid #ffffff;
+    }
+
+    .grade-badge {
+      background: #7b5ba7;
+      backdrop-filter: blur(4px);
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(110, 70, 140, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .grade-badge:active {
+      transform: scale(0.95);
+    }
+
+    .preview-bar {
+      background: #e3d4ed;
+      border-radius: 40px;
+      height: 8px;
+      margin: 4px 0 12px 0;
+      overflow: hidden;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .preview-bar .fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #b48ad9, #8f5fc7);
+      border-radius: 40px;
+      transition: width 0.3s linear;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #5b3f73;
+      padding: 0 4px;
+      margin-bottom: 10px;
+    }
+
+    .info-row span {
+      background: rgba(255, 255, 255, 0.5);
+      padding: 4px 14px;
+      border-radius: 30px;
+      backdrop-filter: blur(2px);
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      margin: 8px 0 16px;
+      justify-content: center;
+    }
+
+    .card {
+      aspect-ratio: 1 / 1;
+      perspective: 800px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: transform 0.15s ease, box-shadow 0.2s;
+    }
+
+    .card:active {
+      transform: scale(0.96);
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      transform-style: preserve-3d;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(80, 50, 110, 0.10);
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card.matched .card-inner {
+      transform: rotateY(180deg);
+      box-shadow: 0 0 0 3px #b28ad9, 0 8px 24px rgba(130, 80, 180, 0.20);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      background: white;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    }
+
+    .card-front {
+      transform: rotateY(180deg);
+      background: white;
+      color: #2d1b3d;
+    }
+
+    .card-front .emoji-big {
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+
+    .card-front .word-en {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.2px;
+      color: #2d1b3d;
+    }
+
+    .card-front .word-zh {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #7a5d94;
+      background: #f0e8f8;
+      padding: 2px 12px;
+      border-radius: 30px;
+      margin-top: 3px;
+    }
+
+    .card-front .speaker-icon {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 0.8rem;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+    }
+
+    .card-front .speaker-icon.active {
+      opacity: 1;
+      animation: pulse 0.5s ease 2;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.3);
+      }
+    }
+
+    .card-back {
+      background: linear-gradient(145deg, #dcc4ee, #c2a5dd);
+      transform: rotateY(0deg);
+      background-image: radial-gradient(circle at 30% 30%, #f0e4fe 2px, transparent 2px),
+        radial-gradient(circle at 70% 80%, #f0e4fe 2px, transparent 2px);
+      background-size: 40px 40px;
+      border: 1px solid #e8d7f5;
+    }
+
+    .card-back::after {
+      content: "★";
+      font-size: 2rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      background: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #3d264f;
+      box-shadow: 0 6px 16px rgba(100, 60, 140, 0.10);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 1 1 auto;
+      min-width: 80px;
+      transition: all 0.15s ease;
+      backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+    }
+
+    .btn:active {
+      transform: scale(0.94);
+      background: #f0e6fa;
+    }
+
+    .btn-primary {
+      background: #7b5ba7;
+      color: white;
+      border: none;
+      box-shadow: 0 8px 18px rgba(110, 70, 160, 0.25);
+    }
+
+    .btn-primary:active {
+      background: #684b8f;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #b28ad9;
+    }
+
+    .btn-danger {
+      background: #e0747a;
+      color: white;
+      border: none;
+      box-shadow: 0 8px 18px rgba(200, 70, 80, 0.25);
+    }
+
+    .btn-danger:active {
+      background: #c95a60;
+    }
+
+    .btn-success {
+      background: #5ba77b;
+      color: white;
+      border: none;
+      box-shadow: 0 8px 18px rgba(70, 160, 110, 0.25);
+    }
+
+    .btn-success:active {
+      background: #4a8f66;
+    }
+
+    .wordbank-panel {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .wordbank-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      color: #3d264f;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+
+    .wordbank-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 36px;
+      align-items: center;
+    }
+
+    .tag {
+      background: white;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #4d2e6b;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      border: 1px solid #e2d0f0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: default;
+      transition: 0.1s ease;
+    }
+
+    .tag .remove {
+      font-weight: 400;
+      opacity: 0.5;
+      margin-left: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .tag .remove:hover {
+      opacity: 1;
+    }
+
+    .wordbank-empty {
+      color: #8f7a9f;
+      font-size: 0.8rem;
+      padding: 4px 0;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d1b3d;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+      background: rgba(40, 25, 60, 0.9);
+      max-width: 80%;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    /* ---------- 年级设置弹窗 ---------- */
+    .grade-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .grade-modal.active {
+      display: flex;
+    }
+
+    .grade-modal-content {
+      background: white;
+      border-radius: 40px;
+      max-width: 420px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px 24px 24px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .grade-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .grade-modal-header h2 {
+      font-size: 1.4rem;
+      color: #3d264f;
+    }
+
+    .grade-modal-header .close-btn {
+      background: #f0e8f8;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.15s;
+    }
+
+    .grade-modal-header .close-btn:active {
+      transform: scale(0.9);
+    }
+
+    .grade-section {
+      margin-bottom: 20px;
+    }
+
+    .grade-section-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #5b3f73;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .grade-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .grade-option {
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: 2px solid #e2d0f0;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #4d2e6b;
+      cursor: pointer;
+      transition: 0.15s;
+      font-family: inherit;
+    }
+
+    .grade-option:active {
+      transform: scale(0.94);
+    }
+
+    .grade-option.active {
+      background: #7b5ba7;
+      color: white;
+      border-color: #7b5ba7;
+    }
+
+    .grade-option.unit-option {
+      padding: 6px 14px;
+      font-size: 0.75rem;
+    }
+
+    .grade-divider {
+      border: none;
+      border-top: 1.5px solid #f0e8f8;
+      margin: 16px 0;
+    }
+
+    .grade-modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .grade-modal-actions .btn {
+      flex: 1;
+      min-width: 80px;
+    }
+
+    /* ---------- 词库浏览页 ---------- */
+    .library-page {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(245, 237, 250, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 1000;
+      padding: 20px 16px 30px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex-direction: column;
+    }
+
+    .library-page.active {
+      display: flex;
+    }
+
+    .library-inner {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .library-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 4px 16px;
+      border-bottom: 2px solid rgba(160, 120, 200, 0.15);
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    .library-header h2 {
+      font-size: 1.5rem;
+      color: #3d264f;
+    }
+
+    .library-header .close-btn {
+      background: rgba(255, 255, 255, 0.6);
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transition: 0.15s;
+    }
+
+    .library-header .close-btn:active {
+      transform: scale(0.92);
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      flex: 1;
+      align-content: start;
+    }
+
+    .library-card {
+      background: white;
+      border-radius: 24px;
+      padding: 16px 8px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(100, 60, 140, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      transition: transform 0.15s, background 0.2s, border-color 0.2s;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .library-card:active {
+      transform: scale(0.95);
+    }
+
+    .library-card .emoji {
+      font-size: 2.8rem;
+      margin-bottom: 4px;
+    }
+
+    .library-card .en {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #2d1b3d;
+    }
+
+    .library-card .zh {
+      font-size: 0.7rem;
+      color: #7a5d94;
+      background: #f0e8f8;
+      padding: 2px 12px;
+      border-radius: 30px;
+      margin-top: 4px;
+    }
+
+    .library-card .play-indicator {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 0.7rem;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+
+    .library-card .play-indicator.active {
+      opacity: 1;
+      animation: pulse 0.5s ease 2;
+    }
+
+    .library-card.pending-delete {
+      animation: shake 0.4s ease-in-out infinite alternate;
+      border-color: #e0747a;
+      background: #fff5f5;
+      border-width: 2px;
+    }
+
+    .library-card .delete-badge {
+      display: none;
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #e0747a;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: 700;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(200, 70, 80, 0.3);
+      border: 2px solid white;
+      pointer-events: none;
+    }
+
+    .library-card.pending-delete .delete-badge {
+      display: flex;
+    }
+
+    .library-card.deleting {
+      animation: deletePop 0.3s forwards;
+    }
+
+    @keyframes shake {
+      0% {
+        transform: rotate(-2deg);
+      }
+      100% {
+        transform: rotate(2deg);
+      }
+    }
+
+    @keyframes deletePop {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+    }
+
+    .library-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #8f7a9f;
+      font-size: 1rem;
+      padding: 60px 0;
+    }
+
+    .library-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-shrink: 0;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .library-actions .btn {
+      flex: 0 1 auto;
+      padding: 10px 24px;
+      min-width: 100px;
+    }
+
+    /* ---------- 单元单词卡片页 ---------- */
+    .unit-tabs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 4px 0 16px;
+      margin: 0 0 4px;
+      flex-shrink: 0;
+    }
+
+    .unit-nav-btn {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #b48ede, #8e6fc7);
+      color: white;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(140, 110, 200, 0.3);
+      transition: transform 0.15s, opacity 0.2s;
+    }
+
+    .unit-nav-btn:active {
+      transform: scale(0.92);
+    }
+
+    .unit-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .unit-current-label {
+      min-width: 130px;
+      text-align: center;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #3d264f;
+    }
+
+    .unit-words-info {
+      text-align: center;
+      color: #8f7a9f;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .delete-hint {
+      display: none;
+      text-align: center;
+      color: #e0747a;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 0 4px;
+      background: rgba(224, 116, 122, 0.08);
+      border-radius: 16px;
+      margin-bottom: 12px;
+    }
+
+    .delete-hint.active {
+      display: block;
+    }
+
+    /* 后端状态指示 */
+    .backend-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: #7a5d94;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .backend-status .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .backend-status .dot.online {
+      background: #5ba77b;
+    }
+    .backend-status .dot.offline {
+      background: #e0747a;
+      animation: pulse 1s infinite;
+    }
+
+    @media (max-width: 420px) {
+      .game-container {
+        padding: 14px 10px 18px;
+      }
+      .header h1 {
+        font-size: 1.3rem;
+      }
+      .btn {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        min-width: 60px;
+      }
+      .card-front .word-en {
+        font-size: 0.85rem;
+      }
+      .card-front .emoji-big {
+        font-size: 1.8rem;
+      }
+      .library-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .library-card .emoji {
+        font-size: 2.2rem;
+      }
+      .grade-modal-content {
+        padding: 20px 16px;
+      }
+    }
+
+    @media (min-width: 421px) {
+      .library-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* 单元单词页：固定 3 列、紧凑卡片、禁止横向溢出 */
+    #unitWordsGrid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    #unitWordsGrid .library-card {
+      min-width: 0;
+      padding: 10px 4px;
+      aspect-ratio: auto;
+      min-height: 88px;
+    }
+    #unitWordsGrid .library-card .emoji {
+      font-size: 1.9rem;
+      margin-bottom: 2px;
+    }
+    #unitWordsGrid .library-card .en {
+      font-size: 0.78rem;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    #unitWordsGrid .library-card .zh {
+      font-size: 0.6rem;
+      padding: 1px 8px;
+      margin-top: 3px;
+    }
+
+    /* 加载动画 */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(123, 91, 167, 0.2);
+      border-top-color: #7b5ba7;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast -->
+  <div id="toast" class="toast">✨ 配对成功</div>
+
+  <!-- 主游戏容器 -->
+  <div class="game-container" id="app">
+    <div class="header">
+      <h1>📚 翻翻乐 <small>外研</small></h1>
+      <div class="header-right">
+        <span class="grade-badge" id="gradeBadge">📖 三年级·上</span>
+        <span class="level-badge" id="levelDisplay">Lv.1 · 3对</span>
+      </div>
+    </div>
+
+    <div class="preview-bar">
+      <div class="fill" id="previewFill" style="width: 100%;"></div>
+    </div>
+    <div class="info-row">
+      <span id="statusText">👀 记忆时间 20s</span>
+      <span id="pairCounter">✅ 0 / 3</span>
+    </div>
+
+    <div id="gridContainer" class="grid grid-3"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="newGameBtn">🔄 新一局</button>
+      <button class="btn btn-outline" id="shuffleBtn">🎲 洗牌</button>
+      <button class="btn btn-outline" id="openLibraryBtn">📖 我的词库</button>
+      <button class="btn btn-outline" id="openUnitWordsBtn">🗂️ 单元单词</button>
+      <button class="btn btn-success" id="syncBtn" style="flex:0.5; min-width:60px;">🔄 同步</button>
+    </div>
+
+    <div class="wordbank-panel">
+      <div class="wordbank-header">
+        <span>📖 我的词库 <span style="font-weight:400; font-size:0.7rem; opacity:0.6;">(长按配对卡片加入)</span></span>
+        <span style="font-weight:400; font-size:0.7rem; opacity:0.6;" id="wordCount">0</span>
+      </div>
+      <div class="wordbank-tags" id="wordbankTags">
+        <span class="wordbank-empty">长按已配对卡片添加 ✨</span>
+      </div>
+      <div class="backend-status" style="margin-top:10px; justify-content:center;">
+        <span class="dot online" id="statusDot"></span>
+        <span id="statusTextBackend">后端就绪 (模拟)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 年级设置弹窗 -->
+  <div class="grade-modal" id="gradeModal">
+    <div class="grade-modal-content">
+      <div class="grade-modal-header">
+        <h2>📚 年级设置</h2>
+        <button class="close-btn" id="closeGradeModalBtn">✕</button>
+      </div>
+
+      <div class="grade-section">
+        <span class="grade-section-label">选择年级</span>
+        <div class="grade-options" id="gradeOptions">
+          <button class="grade-option active" data-grade="3">三年级</button>
+          <button class="grade-option" data-grade="4">四年级</button>
+          <button class="grade-option" data-grade="5">五年级</button>
+          <button class="grade-option" data-grade="6">六年级</button>
+        </div>
+      </div>
+
+      <div class="grade-section">
+        <span class="grade-section-label">选择学期</span>
+        <div class="grade-options" id="semesterOptions">
+          <button class="grade-option active" data-semester="1">上册</button>
+          <button class="grade-option" data-semester="2">下册</button>
+        </div>
+      </div>
+
+      <hr class="grade-divider">
+
+      <div class="grade-section">
+        <span class="grade-section-label">选择单元 (可多选，默认为全部)</span>
+        <div class="grade-options" id="unitOptions">
+          <button class="grade-option unit-option active" data-unit="all">全部</button>
+          <!-- 其余单元按钮由 JS 按所选年级/学期动态生成 (Unit / Module) -->
+        </div>
+      </div>
+
+      <div class="grade-modal-actions">
+        <button class="btn btn-primary" id="applyGradeBtn">✅ 应用设置</button>
+        <button class="btn btn-outline" id="resetGradeBtn">🔄 重置默认</button>
+        <button class="btn btn-success" id="fetchFromBackendBtn">📡 从后端加载</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 词库独立浏览页 -->
+  <div class="library-page" id="libraryPage">
+    <div class="library-inner">
+      <div class="library-header">
+        <h2>📖 我的词库</h2>
+        <button class="close-btn" id="closeLibraryBtn">✕</button>
+      </div>
+      <div class="delete-hint" id="deleteHint">⚠️ 点击卡片删除 · 点击空白区域取消</div>
+      <div class="library-grid" id="libraryGrid">
+        <!-- 动态渲染 -->
+      </div>
+      <div class="library-actions">
+        <button class="btn btn-outline" id="cancelDeleteBtn" style="display:none;">取消删除</button>
+        <button class="btn btn-success" id="syncLibraryBtn">🔄 同步词库</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 单元单词卡片页 -->
+  <div class="library-page" id="unitWordsPage">
+    <div class="library-inner">
+      <div class="library-header">
+        <h2>🗂️ 单元单词</h2>
+        <button class="close-btn" id="closeUnitWordsBtn">✕</button>
+      </div>
+      <div class="unit-tabs" id="unitWordsTabs"></div>
+      <div class="unit-words-info" id="unitWordsInfo"></div>
+      <div class="library-grid" id="unitWordsGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ==============================================================
+      // 0. 全局常量
+      // ==============================================================
+      const PREVIEW_SECONDS = 20;   // 记忆时间（唯一来源，避免魔法数字）
+      const LONG_PRESS_MS = 600;    // 长按阈值
+
+      // ==============================================================
+      // 1. 后端词库接口定义 (模拟 RESTful API)
+      // ==============================================================
+      // GET  /api/words?grade=3&semester=1&units=1,2,3
+      // GET  /api/words/grade-list
+      // POST /api/user/wordbank   { wordIds: [...] }
+      // GET  /api/user/wordbank
+      // POST /api/words/by-ids    { wordIds: [...] }
+
+      // ==============================================================
+      // 2. 模拟后端数据存储
+      // ==============================================================
+      const BACKEND_WORDS = {
+    "3-1": {
+    "label": "三年级·上",
+    "units": {
+      "1": [
+        {
+          "id": "w31_1_1",
+          "en": "let's",
+          "zh": "让我们",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w31_1_2",
+          "en": "friend",
+          "zh": "朋友",
+          "emoji": "👫"
+        },
+        {
+          "id": "w31_1_3",
+          "en": "to",
+          "zh": "向；到",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w31_1_4",
+          "en": "meet",
+          "zh": "认识；结识",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w31_1_5",
+          "en": "you",
+          "zh": "你；你们",
+          "emoji": "💬"
+        },
+        {
+          "id": "w31_1_6",
+          "en": "play",
+          "zh": "玩；玩耍",
+          "emoji": "🎮"
+        },
+        {
+          "id": "w31_1_7",
+          "en": "happy",
+          "zh": "高兴的；快乐的",
+          "emoji": "😊"
+        },
+        {
+          "id": "w31_1_8",
+          "en": "new",
+          "zh": "新的",
+          "emoji": "🆕"
+        },
+        {
+          "id": "w31_1_9",
+          "en": "we",
+          "zh": "我们",
+          "emoji": "👥"
+        },
+        {
+          "id": "w31_1_10",
+          "en": "they",
+          "zh": "他们；她们；它们",
+          "emoji": "👥"
+        },
+        {
+          "id": "w31_1_11",
+          "en": "do",
+          "zh": "做；干",
+          "emoji": "✅"
+        },
+        {
+          "id": "w31_1_12",
+          "en": "help",
+          "zh": "帮助",
+          "emoji": "🤝"
+        }
+      ],
+      "2": [
+        {
+          "id": "w31_2_1",
+          "en": "school",
+          "zh": "学校",
+          "emoji": "🏫"
+        },
+        {
+          "id": "w31_2_2",
+          "en": "bag",
+          "zh": "包",
+          "emoji": "👜"
+        },
+        {
+          "id": "w31_2_3",
+          "en": "book",
+          "zh": "书",
+          "emoji": "📕"
+        },
+        {
+          "id": "w31_2_4",
+          "en": "pen",
+          "zh": "钢笔",
+          "emoji": "🖊️"
+        },
+        {
+          "id": "w31_2_5",
+          "en": "pencil",
+          "zh": "铅笔",
+          "emoji": "✏️"
+        },
+        {
+          "id": "w31_2_6",
+          "en": "ruler",
+          "zh": "尺子；直尺",
+          "emoji": "📏"
+        },
+        {
+          "id": "w31_2_7",
+          "en": "eraser",
+          "zh": "橡皮",
+          "emoji": "🧽"
+        },
+        {
+          "id": "w31_2_8",
+          "en": "schoolbag",
+          "zh": "书包",
+          "emoji": "🎒"
+        },
+        {
+          "id": "w31_2_9",
+          "en": "pencil box",
+          "zh": "铅笔盒",
+          "emoji": "✏️"
+        },
+        {
+          "id": "w31_2_10",
+          "en": "crayon",
+          "zh": "蜡笔",
+          "emoji": "🖍️"
+        },
+        {
+          "id": "w31_2_11",
+          "en": "this",
+          "zh": "这；这个",
+          "emoji": "👉"
+        },
+        {
+          "id": "w31_2_12",
+          "en": "that",
+          "zh": "那；那个",
+          "emoji": "👉"
+        },
+        {
+          "id": "w31_2_13",
+          "en": "in",
+          "zh": "在……里",
+          "emoji": "📦"
+        },
+        {
+          "id": "w31_2_14",
+          "en": "not",
+          "zh": "不；没有",
+          "emoji": "🚫"
+        },
+        {
+          "id": "w31_2_15",
+          "en": "yes",
+          "zh": "是；对",
+          "emoji": "✅"
+        },
+        {
+          "id": "w31_2_16",
+          "en": "no",
+          "zh": "不",
+          "emoji": "❌"
+        },
+        {
+          "id": "w31_2_17",
+          "en": "guess",
+          "zh": "猜；猜测",
+          "emoji": "🤔"
+        }
+      ],
+      "3": [
+        {
+          "id": "w31_3_1",
+          "en": "red",
+          "zh": "红色（的）",
+          "emoji": "🔴"
+        },
+        {
+          "id": "w31_3_2",
+          "en": "blue",
+          "zh": "蓝色（的）",
+          "emoji": "🔵"
+        },
+        {
+          "id": "w31_3_3",
+          "en": "yellow",
+          "zh": "黄色（的）",
+          "emoji": "🟡"
+        },
+        {
+          "id": "w31_3_4",
+          "en": "green",
+          "zh": "绿色（的）",
+          "emoji": "🟢"
+        },
+        {
+          "id": "w31_3_5",
+          "en": "black",
+          "zh": "黑色（的）",
+          "emoji": "⚫"
+        },
+        {
+          "id": "w31_3_6",
+          "en": "white",
+          "zh": "白色（的）",
+          "emoji": "⚪"
+        },
+        {
+          "id": "w31_3_7",
+          "en": "orange",
+          "zh": "橙色（的）",
+          "emoji": "🟠"
+        },
+        {
+          "id": "w31_3_8",
+          "en": "purple",
+          "zh": "紫色（的）",
+          "emoji": "🟣"
+        },
+        {
+          "id": "w31_3_9",
+          "en": "pink",
+          "zh": "粉红色（的）",
+          "emoji": "🌸"
+        },
+        {
+          "id": "w31_3_10",
+          "en": "brown",
+          "zh": "棕色（的）",
+          "emoji": "🟤"
+        },
+        {
+          "id": "w31_3_11",
+          "en": "colour",
+          "zh": "颜色",
+          "emoji": "🎨"
+        }
+      ],
+      "4": [
+        {
+          "id": "w31_4_1",
+          "en": "one",
+          "zh": "一",
+          "emoji": "1️⃣"
+        },
+        {
+          "id": "w31_4_2",
+          "en": "two",
+          "zh": "二",
+          "emoji": "2️⃣"
+        },
+        {
+          "id": "w31_4_3",
+          "en": "three",
+          "zh": "三",
+          "emoji": "3️⃣"
+        },
+        {
+          "id": "w31_4_4",
+          "en": "four",
+          "zh": "四",
+          "emoji": "4️⃣"
+        },
+        {
+          "id": "w31_4_5",
+          "en": "five",
+          "zh": "五",
+          "emoji": "5️⃣"
+        },
+        {
+          "id": "w31_4_6",
+          "en": "six",
+          "zh": "六",
+          "emoji": "6️⃣"
+        },
+        {
+          "id": "w31_4_7",
+          "en": "seven",
+          "zh": "七",
+          "emoji": "7️⃣"
+        },
+        {
+          "id": "w31_4_8",
+          "en": "eight",
+          "zh": "八",
+          "emoji": "8️⃣"
+        },
+        {
+          "id": "w31_4_9",
+          "en": "nine",
+          "zh": "九",
+          "emoji": "9️⃣"
+        },
+        {
+          "id": "w31_4_10",
+          "en": "ten",
+          "zh": "十",
+          "emoji": "🔟"
+        }
+      ],
+      "5": [
+        {
+          "id": "w31_5_1",
+          "en": "mum",
+          "zh": "妈妈",
+          "emoji": "👩"
+        },
+        {
+          "id": "w31_5_2",
+          "en": "mother",
+          "zh": "母亲",
+          "emoji": "👩"
+        },
+        {
+          "id": "w31_5_3",
+          "en": "dad",
+          "zh": "爸爸",
+          "emoji": "👨"
+        },
+        {
+          "id": "w31_5_4",
+          "en": "father",
+          "zh": "父亲",
+          "emoji": "👨"
+        },
+        {
+          "id": "w31_5_5",
+          "en": "sister",
+          "zh": "姐；妹",
+          "emoji": "👧"
+        },
+        {
+          "id": "w31_5_6",
+          "en": "brother",
+          "zh": "兄；弟",
+          "emoji": "👦"
+        },
+        {
+          "id": "w31_5_7",
+          "en": "grandpa",
+          "zh": "爷爷；外公",
+          "emoji": "👴"
+        },
+        {
+          "id": "w31_5_8",
+          "en": "grandfather",
+          "zh": "祖父；外祖父",
+          "emoji": "👴"
+        },
+        {
+          "id": "w31_5_9",
+          "en": "grandma",
+          "zh": "奶奶；外婆",
+          "emoji": "👵"
+        },
+        {
+          "id": "w31_5_10",
+          "en": "grandmother",
+          "zh": "祖母；外祖母",
+          "emoji": "👵"
+        }
+      ],
+      "6": [
+        {
+          "id": "w31_6_1",
+          "en": "home",
+          "zh": "家",
+          "emoji": "🏠"
+        },
+        {
+          "id": "w31_6_2",
+          "en": "room",
+          "zh": "房间",
+          "emoji": "🚪"
+        },
+        {
+          "id": "w31_6_3",
+          "en": "door",
+          "zh": "门",
+          "emoji": "🚪"
+        },
+        {
+          "id": "w31_6_4",
+          "en": "chair",
+          "zh": "椅子",
+          "emoji": "🪑"
+        },
+        {
+          "id": "w31_6_5",
+          "en": "bed",
+          "zh": "床",
+          "emoji": "🛏️"
+        },
+        {
+          "id": "w31_6_6",
+          "en": "toy",
+          "zh": "玩具",
+          "emoji": "🧸"
+        },
+        {
+          "id": "w31_6_7",
+          "en": "table",
+          "zh": "桌子",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w31_6_8",
+          "en": "cat",
+          "zh": "猫",
+          "emoji": "🐱"
+        },
+        {
+          "id": "w31_6_9",
+          "en": "ball",
+          "zh": "球",
+          "emoji": "⚽"
+        },
+        {
+          "id": "w31_6_10",
+          "en": "apple",
+          "zh": "苹果",
+          "emoji": "🍎"
+        },
+        {
+          "id": "w31_6_11",
+          "en": "kitchen",
+          "zh": "厨房",
+          "emoji": "🍳"
+        },
+        {
+          "id": "w31_6_12",
+          "en": "bedroom",
+          "zh": "卧室",
+          "emoji": "🛏️"
+        },
+        {
+          "id": "w31_6_13",
+          "en": "bathroom",
+          "zh": "浴室；卫生间",
+          "emoji": "🚿"
+        },
+        {
+          "id": "w31_6_14",
+          "en": "living room",
+          "zh": "客厅",
+          "emoji": "🛋️"
+        },
+        {
+          "id": "w31_6_15",
+          "en": "dining room",
+          "zh": "餐厅",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w31_6_16",
+          "en": "game",
+          "zh": "游戏",
+          "emoji": "🎮"
+        },
+        {
+          "id": "w31_6_17",
+          "en": "think",
+          "zh": "想；认为",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w31_6_18",
+          "en": "put",
+          "zh": "放",
+          "emoji": "📥"
+        },
+        {
+          "id": "w31_6_19",
+          "en": "share",
+          "zh": "分享",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w31_6_20",
+          "en": "like",
+          "zh": "喜欢",
+          "emoji": "❤️"
+        },
+        {
+          "id": "w31_6_21",
+          "en": "run",
+          "zh": "跑",
+          "emoji": "🏃"
+        },
+        {
+          "id": "w31_6_22",
+          "en": "under",
+          "zh": "在……下面",
+          "emoji": "🔻"
+        },
+        {
+          "id": "w31_6_23",
+          "en": "where",
+          "zh": "在哪里",
+          "emoji": "❓"
+        },
+        {
+          "id": "w31_6_24",
+          "en": "welcome",
+          "zh": "欢迎",
+          "emoji": "👋"
+        }
+      ],
+      "w": [
+        {
+          "id": "w31_w_1",
+          "en": "hello",
+          "zh": "你好",
+          "emoji": "👋"
+        },
+        {
+          "id": "w31_w_2",
+          "en": "hi",
+          "zh": "嘿；你好",
+          "emoji": "👋"
+        },
+        {
+          "id": "w31_w_3",
+          "en": "I",
+          "zh": "我",
+          "emoji": "🙋"
+        },
+        {
+          "id": "w31_w_4",
+          "en": "am",
+          "zh": "是",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w31_w_5",
+          "en": "good",
+          "zh": "好的",
+          "emoji": "👍"
+        },
+        {
+          "id": "w31_w_6",
+          "en": "morning",
+          "zh": "早晨；上午",
+          "emoji": "🌅"
+        },
+        {
+          "id": "w31_w_7",
+          "en": "good morning",
+          "zh": "早上好",
+          "emoji": "🌅"
+        },
+        {
+          "id": "w31_w_8",
+          "en": "Miss",
+          "zh": "小姐",
+          "emoji": "👩"
+        },
+        {
+          "id": "w31_w_9",
+          "en": "Mr",
+          "zh": "先生",
+          "emoji": "👨"
+        },
+        {
+          "id": "w31_w_10",
+          "en": "what",
+          "zh": "什么",
+          "emoji": "❓"
+        },
+        {
+          "id": "w31_w_11",
+          "en": "is",
+          "zh": "是",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w31_w_12",
+          "en": "your",
+          "zh": "你的；你们的",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w31_w_13",
+          "en": "name",
+          "zh": "名字",
+          "emoji": "🏷️"
+        },
+        {
+          "id": "w31_w_14",
+          "en": "my",
+          "zh": "我的",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w31_w_15",
+          "en": "nice",
+          "zh": "美好的",
+          "emoji": "🌟"
+        },
+        {
+          "id": "w31_w_16",
+          "en": "to",
+          "zh": "向；到",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w31_w_17",
+          "en": "meet",
+          "zh": "遇见；结识",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w31_w_18",
+          "en": "you",
+          "zh": "你；你们",
+          "emoji": "💬"
+        },
+        {
+          "id": "w31_w_19",
+          "en": "too",
+          "zh": "也",
+          "emoji": "➕"
+        },
+        {
+          "id": "w31_w_20",
+          "en": "goodbye",
+          "zh": "再见",
+          "emoji": "👋"
+        },
+        {
+          "id": "w31_w_21",
+          "en": "bye",
+          "zh": "再见",
+          "emoji": "👋"
+        },
+        {
+          "id": "w31_w_22",
+          "en": "ha",
+          "zh": "哈",
+          "emoji": "😄"
+        },
+        {
+          "id": "w31_w_23",
+          "en": "haha",
+          "zh": "哈哈",
+          "emoji": "😄"
+        }
+      ]
+    }
+  },
+  "3-2": {
+    "label": "三年级·下",
+    "units": {
+      "1": [
+        {
+          "id": "w32_1_1",
+          "en": "animal",
+          "zh": "动物",
+          "emoji": "🐾"
+        },
+        {
+          "id": "w32_1_2",
+          "en": "panda",
+          "zh": "大熊猫",
+          "emoji": "🐼"
+        },
+        {
+          "id": "w32_1_3",
+          "en": "elephant",
+          "zh": "象；大象",
+          "emoji": "🐘"
+        },
+        {
+          "id": "w32_1_4",
+          "en": "bear",
+          "zh": "熊",
+          "emoji": "🐻"
+        },
+        {
+          "id": "w32_1_5",
+          "en": "giraffe",
+          "zh": "长颈鹿",
+          "emoji": "🦒"
+        },
+        {
+          "id": "w32_1_6",
+          "en": "monkey",
+          "zh": "猴；猴子",
+          "emoji": "🐵"
+        },
+        {
+          "id": "w32_1_7",
+          "en": "tiger",
+          "zh": "老虎",
+          "emoji": "🐯"
+        },
+        {
+          "id": "w32_1_8",
+          "en": "lion",
+          "zh": "狮子",
+          "emoji": "🦁"
+        },
+        {
+          "id": "w32_1_9",
+          "en": "them",
+          "zh": "他们；她们；它们",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w32_1_10",
+          "en": "draw",
+          "zh": "画；绘画",
+          "emoji": "🎨"
+        },
+        {
+          "id": "w32_1_11",
+          "en": "out",
+          "zh": "往外；向外；出来",
+          "emoji": "🚪"
+        },
+        {
+          "id": "w32_1_12",
+          "en": "big",
+          "zh": "大的",
+          "emoji": "🔼"
+        },
+        {
+          "id": "w32_1_13",
+          "en": "small",
+          "zh": "小的",
+          "emoji": "🔽"
+        },
+        {
+          "id": "w32_1_14",
+          "en": "tall",
+          "zh": "高的",
+          "emoji": "🔺"
+        },
+        {
+          "id": "w32_1_15",
+          "en": "short",
+          "zh": "矮的；短的",
+          "emoji": "🔻"
+        },
+        {
+          "id": "w32_1_16",
+          "en": "strong",
+          "zh": "强壮的",
+          "emoji": "🏋️"
+        },
+        {
+          "id": "w32_1_17",
+          "en": "cute",
+          "zh": "可爱的",
+          "emoji": "🥰"
+        },
+        {
+          "id": "w32_1_18",
+          "en": "black",
+          "zh": "黑色的",
+          "emoji": "⚫"
+        },
+        {
+          "id": "w32_1_19",
+          "en": "white",
+          "zh": "白色的",
+          "emoji": "⚪"
+        },
+        {
+          "id": "w32_1_20",
+          "en": "zoo",
+          "zh": "动物园",
+          "emoji": "🦓"
+        }
+      ],
+      "2": [
+        {
+          "id": "w32_2_1",
+          "en": "head",
+          "zh": "头",
+          "emoji": "👤"
+        },
+        {
+          "id": "w32_2_2",
+          "en": "eye",
+          "zh": "眼睛",
+          "emoji": "👀"
+        },
+        {
+          "id": "w32_2_3",
+          "en": "ear",
+          "zh": "耳朵",
+          "emoji": "👂"
+        },
+        {
+          "id": "w32_2_4",
+          "en": "nose",
+          "zh": "鼻子",
+          "emoji": "👃"
+        },
+        {
+          "id": "w32_2_5",
+          "en": "mouth",
+          "zh": "嘴；口",
+          "emoji": "👄"
+        },
+        {
+          "id": "w32_2_6",
+          "en": "face",
+          "zh": "脸",
+          "emoji": "😀"
+        },
+        {
+          "id": "w32_2_7",
+          "en": "arm",
+          "zh": "手臂；胳膊",
+          "emoji": "💪"
+        },
+        {
+          "id": "w32_2_8",
+          "en": "hand",
+          "zh": "手",
+          "emoji": "✋"
+        },
+        {
+          "id": "w32_2_9",
+          "en": "leg",
+          "zh": "腿",
+          "emoji": "🦵"
+        },
+        {
+          "id": "w32_2_10",
+          "en": "foot",
+          "zh": "脚",
+          "emoji": "👣"
+        }
+      ],
+      "3": [
+        {
+          "id": "w32_3_1",
+          "en": "food",
+          "zh": "食物",
+          "emoji": "🍴"
+        },
+        {
+          "id": "w32_3_2",
+          "en": "yummy",
+          "zh": "好吃的；美味的",
+          "emoji": "😋"
+        },
+        {
+          "id": "w32_3_3",
+          "en": "rice",
+          "zh": "米饭",
+          "emoji": "🍚"
+        },
+        {
+          "id": "w32_3_4",
+          "en": "noodles",
+          "zh": "面条",
+          "emoji": "🍜"
+        },
+        {
+          "id": "w32_3_5",
+          "en": "cake",
+          "zh": "蛋糕",
+          "emoji": "🍰"
+        },
+        {
+          "id": "w32_3_6",
+          "en": "milk",
+          "zh": "牛奶",
+          "emoji": "🥛"
+        },
+        {
+          "id": "w32_3_7",
+          "en": "fruit",
+          "zh": "水果",
+          "emoji": "🍇"
+        },
+        {
+          "id": "w32_3_8",
+          "en": "apple",
+          "zh": "苹果",
+          "emoji": "🍎"
+        },
+        {
+          "id": "w32_3_9",
+          "en": "orange",
+          "zh": "橙子；橘子",
+          "emoji": "🍊"
+        },
+        {
+          "id": "w32_3_10",
+          "en": "strawberry",
+          "zh": "草莓",
+          "emoji": "🍓"
+        },
+        {
+          "id": "w32_3_11",
+          "en": "tomato",
+          "zh": "西红柿；番茄",
+          "emoji": "🍅"
+        },
+        {
+          "id": "w32_3_12",
+          "en": "egg",
+          "zh": "蛋；鸡蛋",
+          "emoji": "🥚"
+        },
+        {
+          "id": "w32_3_13",
+          "en": "carrot",
+          "zh": "胡萝卜",
+          "emoji": "🥕"
+        },
+        {
+          "id": "w32_3_14",
+          "en": "fish",
+          "zh": "鱼",
+          "emoji": "🐟"
+        },
+        {
+          "id": "w32_3_15",
+          "en": "chicken",
+          "zh": "鸡肉",
+          "emoji": "🍗"
+        },
+        {
+          "id": "w32_3_16",
+          "en": "meat",
+          "zh": "肉",
+          "emoji": "🥩"
+        }
+      ],
+      "4": [
+        {
+          "id": "w32_4_1",
+          "en": "hobby",
+          "zh": "业余爱好；嗜好",
+          "emoji": "🎯"
+        },
+        {
+          "id": "w32_4_2",
+          "en": "free",
+          "zh": "空闲的；有空的",
+          "emoji": "💤"
+        },
+        {
+          "id": "w32_4_3",
+          "en": "after",
+          "zh": "在……之后",
+          "emoji": "🔜"
+        },
+        {
+          "id": "w32_4_4",
+          "en": "swim",
+          "zh": "游泳",
+          "emoji": "🏊"
+        },
+        {
+          "id": "w32_4_5",
+          "en": "a lot",
+          "zh": "大量；许多",
+          "emoji": "♾️"
+        },
+        {
+          "id": "w32_4_6",
+          "en": "these",
+          "zh": "这些",
+          "emoji": "👉"
+        },
+        {
+          "id": "w32_4_7",
+          "en": "tai chi",
+          "zh": "太极（拳）",
+          "emoji": "🧘"
+        },
+        {
+          "id": "w32_4_8",
+          "en": "read",
+          "zh": "阅读",
+          "emoji": "📖"
+        },
+        {
+          "id": "w32_4_9",
+          "en": "sing",
+          "zh": "唱歌",
+          "emoji": "🎤"
+        },
+        {
+          "id": "w32_4_10",
+          "en": "dance",
+          "zh": "跳舞",
+          "emoji": "💃"
+        },
+        {
+          "id": "w32_4_11",
+          "en": "paint",
+          "zh": "用颜料画；绘画",
+          "emoji": "🖌️"
+        }
+      ],
+      "5": [
+        {
+          "id": "w32_5_1",
+          "en": "time",
+          "zh": "时间",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w32_5_2",
+          "en": "clock",
+          "zh": "时钟",
+          "emoji": "🕰️"
+        },
+        {
+          "id": "w32_5_3",
+          "en": "o'clock",
+          "zh": "……点钟",
+          "emoji": "🕐"
+        },
+        {
+          "id": "w32_5_4",
+          "en": "tell",
+          "zh": "告诉；讲述（时间）",
+          "emoji": "💬"
+        },
+        {
+          "id": "w32_5_5",
+          "en": "fifteen",
+          "zh": "十五",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w32_5_6",
+          "en": "thirty",
+          "zh": "三十",
+          "emoji": "3️⃣"
+        },
+        {
+          "id": "w32_5_7",
+          "en": "forty-five",
+          "zh": "四十五",
+          "emoji": "4️⃣"
+        },
+        {
+          "id": "w32_5_8",
+          "en": "dinner",
+          "zh": "晚餐；正餐",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w32_5_9",
+          "en": "past",
+          "zh": "过（……点）",
+          "emoji": "⏭️"
+        },
+        {
+          "id": "w32_5_10",
+          "en": "half",
+          "zh": "一半；半",
+          "emoji": "🌗"
+        },
+        {
+          "id": "w32_5_11",
+          "en": "homework",
+          "zh": "家庭作业",
+          "emoji": "✏️"
+        },
+        {
+          "id": "w32_5_12",
+          "en": "need",
+          "zh": "需要",
+          "emoji": "🙏"
+        },
+        {
+          "id": "w32_5_13",
+          "en": "activity",
+          "zh": "活动",
+          "emoji": "🏃"
+        },
+        {
+          "id": "w32_5_14",
+          "en": "tick-tock",
+          "zh": "（钟表滴答声）",
+          "emoji": "⏱️"
+        },
+        {
+          "id": "w32_5_15",
+          "en": "urgh",
+          "zh": "（表示烦躁的叹词）",
+          "emoji": "😣"
+        }
+      ],
+      "6": [
+        {
+          "id": "w32_6_1",
+          "en": "week",
+          "zh": "周；星期",
+          "emoji": "📅"
+        },
+        {
+          "id": "w32_6_2",
+          "en": "Monday",
+          "zh": "星期一",
+          "emoji": "🌙"
+        },
+        {
+          "id": "w32_6_3",
+          "en": "Tuesday",
+          "zh": "星期二",
+          "emoji": "🌟"
+        },
+        {
+          "id": "w32_6_4",
+          "en": "Wednesday",
+          "zh": "星期三",
+          "emoji": "🌍"
+        },
+        {
+          "id": "w32_6_5",
+          "en": "Thursday",
+          "zh": "星期四",
+          "emoji": "🌝"
+        },
+        {
+          "id": "w32_6_6",
+          "en": "Friday",
+          "zh": "星期五",
+          "emoji": "🎉"
+        },
+        {
+          "id": "w32_6_7",
+          "en": "Saturday",
+          "zh": "星期六",
+          "emoji": "🛍️"
+        },
+        {
+          "id": "w32_6_8",
+          "en": "Sunday",
+          "zh": "星期日",
+          "emoji": "🌞"
+        },
+        {
+          "id": "w32_6_9",
+          "en": "usually",
+          "zh": "通常",
+          "emoji": "🔁"
+        }
+      ]
+    }
+  },
+  "4-1": {
+    "label": "四年级·上",
+    "units": {
+      "1": [
+        {
+          "id": "w41_1_1",
+          "en": "sport",
+          "zh": "运动",
+          "emoji": "🏅"
+        },
+        {
+          "id": "w41_1_2",
+          "en": "jump",
+          "zh": "跳",
+          "emoji": "🤸"
+        },
+        {
+          "id": "w41_1_3",
+          "en": "high",
+          "zh": "高高地",
+          "emoji": "🔝"
+        },
+        {
+          "id": "w41_1_4",
+          "en": "far",
+          "zh": "远",
+          "emoji": "↔️"
+        },
+        {
+          "id": "w41_1_5",
+          "en": "ping-pong",
+          "zh": "乒乓球运动",
+          "emoji": "🏓"
+        },
+        {
+          "id": "w41_1_6",
+          "en": "volleyball",
+          "zh": "排球（运动）",
+          "emoji": "🏐"
+        },
+        {
+          "id": "w41_1_7",
+          "en": "first",
+          "zh": "最初",
+          "emoji": "1️⃣"
+        },
+        {
+          "id": "w41_1_8",
+          "en": "at first",
+          "zh": "起初",
+          "emoji": "🔰"
+        },
+        {
+          "id": "w41_1_9",
+          "en": "hope",
+          "zh": "希望",
+          "emoji": "🤞"
+        },
+        {
+          "id": "w41_1_10",
+          "en": "lose",
+          "zh": "失去",
+          "emoji": "💔"
+        },
+        {
+          "id": "w41_1_11",
+          "en": "because",
+          "zh": "因为",
+          "emoji": "🔗"
+        },
+        {
+          "id": "w41_1_12",
+          "en": "because of sb/sth",
+          "zh": "因为某人/某事物",
+          "emoji": "🔗"
+        },
+        {
+          "id": "w41_1_13",
+          "en": "cancer",
+          "zh": "癌（症）",
+          "emoji": "🎗️"
+        },
+        {
+          "id": "w41_1_14",
+          "en": "across",
+          "zh": "横跨",
+          "emoji": "↔️"
+        },
+        {
+          "id": "w41_1_15",
+          "en": "money",
+          "zh": "钱",
+          "emoji": "💰"
+        },
+        {
+          "id": "w41_1_16",
+          "en": "hard",
+          "zh": "困难的",
+          "emoji": "😓"
+        },
+        {
+          "id": "w41_1_17",
+          "en": "kind",
+          "zh": "友善的",
+          "emoji": "😊"
+        },
+        {
+          "id": "w41_1_18",
+          "en": "keep",
+          "zh": "持续",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w41_1_19",
+          "en": "month",
+          "zh": "一个月",
+          "emoji": "📅"
+        },
+        {
+          "id": "w41_1_20",
+          "en": "ill",
+          "zh": "生病的",
+          "emoji": "🤒"
+        },
+        {
+          "id": "w41_1_21",
+          "en": "year",
+          "zh": "年；年度",
+          "emoji": "📆"
+        },
+        {
+          "id": "w41_1_22",
+          "en": "remember",
+          "zh": "纪念；记住",
+          "emoji": "🧠"
+        },
+        {
+          "id": "w41_1_23",
+          "en": "fail",
+          "zh": "失败",
+          "emoji": "❌"
+        },
+        {
+          "id": "w41_1_24",
+          "en": "give",
+          "zh": "给予",
+          "emoji": "🎁"
+        },
+        {
+          "id": "w41_1_25",
+          "en": "give up",
+          "zh": "放弃",
+          "emoji": "🏳️"
+        },
+        {
+          "id": "w41_1_26",
+          "en": "never",
+          "zh": "决不，永不",
+          "emoji": "🚫"
+        },
+        {
+          "id": "w41_1_27",
+          "en": "try",
+          "zh": "努力；尝试",
+          "emoji": "💪"
+        },
+        {
+          "id": "w41_1_28",
+          "en": "player",
+          "zh": "运动员，选手",
+          "emoji": "🏃"
+        },
+        {
+          "id": "w41_1_29",
+          "en": "ability",
+          "zh": "能力",
+          "emoji": "💪"
+        }
+      ],
+      "2": [
+        {
+          "id": "w41_2_1",
+          "en": "phew",
+          "zh": "啊，唷，唉",
+          "emoji": "😅"
+        },
+        {
+          "id": "w41_2_2",
+          "en": "wash",
+          "zh": "洗",
+          "emoji": "🧼"
+        },
+        {
+          "id": "w41_2_3",
+          "en": "dish",
+          "zh": "盘子，碟子",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w41_2_4",
+          "en": "feed",
+          "zh": "喂养，给……食物",
+          "emoji": "🍼"
+        },
+        {
+          "id": "w41_2_5",
+          "en": "sweep",
+          "zh": "扫，打扫",
+          "emoji": "🧹"
+        },
+        {
+          "id": "w41_2_6",
+          "en": "floor",
+          "zh": "地板，地面",
+          "emoji": "🟫"
+        },
+        {
+          "id": "w41_2_7",
+          "en": "rubbish",
+          "zh": "垃圾",
+          "emoji": "🗑️"
+        },
+        {
+          "id": "w41_2_8",
+          "en": "chore",
+          "zh": "家庭杂务",
+          "emoji": "🧽"
+        },
+        {
+          "id": "w41_2_9",
+          "en": "to-do list",
+          "zh": "待办清单",
+          "emoji": "✅"
+        },
+        {
+          "id": "w41_2_10",
+          "en": "may",
+          "zh": "可以（表示允许某人做某事）",
+          "emoji": "🙆"
+        },
+        {
+          "id": "w41_2_11",
+          "en": "outside",
+          "zh": "在室外",
+          "emoji": "🌳"
+        },
+        {
+          "id": "w41_2_12",
+          "en": "tidy",
+          "zh": "整理，收拾",
+          "emoji": "🗂️"
+        },
+        {
+          "id": "w41_2_13",
+          "en": "easy",
+          "zh": "容易的",
+          "emoji": "😎"
+        },
+        {
+          "id": "w41_2_14",
+          "en": "clean",
+          "zh": "清洁的，干净的",
+          "emoji": "✨"
+        },
+        {
+          "id": "w41_2_15",
+          "en": "woof",
+          "zh": "汪汪（形容狗吠声）",
+          "emoji": "🐶"
+        },
+        {
+          "id": "w41_2_16",
+          "en": "job",
+          "zh": "任务，事情",
+          "emoji": "💼"
+        },
+        {
+          "id": "w41_2_17",
+          "en": "good job",
+          "zh": "干得好，真不错",
+          "emoji": "👍"
+        },
+        {
+          "id": "w41_2_18",
+          "en": "dirty",
+          "zh": "脏的",
+          "emoji": "🟤"
+        },
+        {
+          "id": "w41_2_19",
+          "en": "desk",
+          "zh": "书桌，写字台",
+          "emoji": "🪑"
+        },
+        {
+          "id": "w41_2_20",
+          "en": "wall",
+          "zh": "墙",
+          "emoji": "🧱"
+        },
+        {
+          "id": "w41_2_21",
+          "en": "again",
+          "zh": "再一次",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w41_2_22",
+          "en": "also",
+          "zh": "除此之外，还",
+          "emoji": "➕"
+        },
+        {
+          "id": "w41_2_23",
+          "en": "problem",
+          "zh": "问题",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w41_2_24",
+          "en": "finish",
+          "zh": "完成，做完",
+          "emoji": "🏁"
+        },
+        {
+          "id": "w41_2_25",
+          "en": "sunshine",
+          "zh": "阳光；幸福",
+          "emoji": "☀️"
+        },
+        {
+          "id": "w41_2_26",
+          "en": "sometimes",
+          "zh": "有时",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w41_2_27",
+          "en": "feel",
+          "zh": "感受到，觉得",
+          "emoji": "💭"
+        },
+        {
+          "id": "w41_2_28",
+          "en": "tired",
+          "zh": "困倦的；疲惫的，累的",
+          "emoji": "😴"
+        },
+        {
+          "id": "w41_2_29",
+          "en": "helpful",
+          "zh": "有用的，有帮助的",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w41_2_30",
+          "en": "warm",
+          "zh": "（使）变暖和；温暖的",
+          "emoji": "🔥"
+        },
+        {
+          "id": "w41_2_31",
+          "en": "warm up",
+          "zh": "（使）变暖",
+          "emoji": "🔥"
+        },
+        {
+          "id": "w41_2_32",
+          "en": "water",
+          "zh": "给……浇水",
+          "emoji": "💧"
+        },
+        {
+          "id": "w41_2_33",
+          "en": "yard",
+          "zh": "庭院",
+          "emoji": "🏡"
+        },
+        {
+          "id": "w41_2_34",
+          "en": "helper",
+          "zh": "帮手；助手",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w41_2_35",
+          "en": "pick",
+          "zh": "采，摘",
+          "emoji": "🧺"
+        },
+        {
+          "id": "w41_2_36",
+          "en": "pig",
+          "zh": "猪",
+          "emoji": "🐷"
+        },
+        {
+          "id": "w41_2_37",
+          "en": "cow",
+          "zh": "母牛；奶牛",
+          "emoji": "🐮"
+        },
+        {
+          "id": "w41_2_38",
+          "en": "collect",
+          "zh": "收集，采集",
+          "emoji": "📥"
+        },
+        {
+          "id": "w41_2_39",
+          "en": "cut",
+          "zh": "修剪",
+          "emoji": "✂️"
+        },
+        {
+          "id": "w41_2_40",
+          "en": "grass",
+          "zh": "草，青草",
+          "emoji": "🌿"
+        },
+        {
+          "id": "w41_2_41",
+          "en": "table",
+          "zh": "桌子",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w41_2_42",
+          "en": "bed",
+          "zh": "床",
+          "emoji": "🛏️"
+        },
+        {
+          "id": "w41_2_43",
+          "en": "fridge",
+          "zh": "冰箱",
+          "emoji": "🧊"
+        },
+        {
+          "id": "w41_2_44",
+          "en": "vegetable",
+          "zh": "蔬菜",
+          "emoji": "🥦"
+        },
+        {
+          "id": "w41_2_45",
+          "en": "make",
+          "zh": "做；制作",
+          "emoji": "🛠️"
+        },
+        {
+          "id": "w41_2_46",
+          "en": "put",
+          "zh": "放；安置",
+          "emoji": "📦"
+        }
+      ],
+      "3": [
+        {
+          "id": "w41_3_1",
+          "en": "weather",
+          "zh": "天气",
+          "emoji": "🌤️"
+        },
+        {
+          "id": "w41_3_2",
+          "en": "sunny",
+          "zh": "阳光充足的",
+          "emoji": "☀️"
+        },
+        {
+          "id": "w41_3_3",
+          "en": "cloud",
+          "zh": "云",
+          "emoji": "☁️"
+        },
+        {
+          "id": "w41_3_4",
+          "en": "by",
+          "zh": "经过",
+          "emoji": "➡️"
+        },
+        {
+          "id": "w41_3_5",
+          "en": "cloudy",
+          "zh": "多云的，阴天的",
+          "emoji": "☁️"
+        },
+        {
+          "id": "w41_3_6",
+          "en": "wind",
+          "zh": "风",
+          "emoji": "🌬️"
+        },
+        {
+          "id": "w41_3_7",
+          "en": "blow",
+          "zh": "吹，刮",
+          "emoji": "💨"
+        },
+        {
+          "id": "w41_3_8",
+          "en": "windy",
+          "zh": "风大的；多风的",
+          "emoji": "🌬️"
+        },
+        {
+          "id": "w41_3_9",
+          "en": "rain",
+          "zh": "雨",
+          "emoji": "🌧️"
+        },
+        {
+          "id": "w41_3_10",
+          "en": "rainy",
+          "zh": "多雨的",
+          "emoji": "🌧️"
+        },
+        {
+          "id": "w41_3_11",
+          "en": "snow",
+          "zh": "雪",
+          "emoji": "❄️"
+        },
+        {
+          "id": "w41_3_12",
+          "en": "any",
+          "zh": "任何一个",
+          "emoji": "🤷"
+        },
+        {
+          "id": "w41_3_13",
+          "en": "cold",
+          "zh": "冷的，寒冷的",
+          "emoji": "🥶"
+        },
+        {
+          "id": "w41_3_14",
+          "en": "or",
+          "zh": "或者",
+          "emoji": "🔀"
+        },
+        {
+          "id": "w41_3_15",
+          "en": "enjoy",
+          "zh": "享受……的乐趣",
+          "emoji": "😄"
+        },
+        {
+          "id": "w41_3_16",
+          "en": "diary",
+          "zh": "日记",
+          "emoji": "📔"
+        },
+        {
+          "id": "w41_3_17",
+          "en": "special",
+          "zh": "特殊的，特别的",
+          "emoji": "⭐"
+        },
+        {
+          "id": "w41_3_18",
+          "en": "teacher",
+          "zh": "老师",
+          "emoji": "👩‍🏫"
+        },
+        {
+          "id": "w41_3_19",
+          "en": "taste",
+          "zh": "有……的味道",
+          "emoji": "👅"
+        },
+        {
+          "id": "w41_3_20",
+          "en": "ice cream",
+          "zh": "冰激凌，雪糕",
+          "emoji": "🍦"
+        },
+        {
+          "id": "w41_3_21",
+          "en": "real",
+          "zh": "真的，真正的",
+          "emoji": "💯"
+        },
+        {
+          "id": "w41_3_22",
+          "en": "later",
+          "zh": "之后",
+          "emoji": "⏭️"
+        },
+        {
+          "id": "w41_3_23",
+          "en": "surprise",
+          "zh": "意想不到的事",
+          "emoji": "🎉"
+        },
+        {
+          "id": "w41_3_24",
+          "en": "coat",
+          "zh": "外套",
+          "emoji": "🧥"
+        },
+        {
+          "id": "w41_3_25",
+          "en": "turn",
+          "zh": "转身，转动",
+          "emoji": "🔄"
+        },
+        {
+          "id": "w41_3_26",
+          "en": "turn on",
+          "zh": "打开",
+          "emoji": "💡"
+        },
+        {
+          "id": "w41_3_27",
+          "en": "TV",
+          "zh": "电视",
+          "emoji": "📺"
+        },
+        {
+          "id": "w41_3_28",
+          "en": "report",
+          "zh": "报道",
+          "emoji": "📰"
+        },
+        {
+          "id": "w41_3_29",
+          "en": "sun",
+          "zh": "太阳",
+          "emoji": "☀️"
+        },
+        {
+          "id": "w41_3_30",
+          "en": "snowy",
+          "zh": "下雪的；多雪的",
+          "emoji": "❄️"
+        },
+        {
+          "id": "w41_3_31",
+          "en": "hot",
+          "zh": "热的；炎热的",
+          "emoji": "🥵"
+        },
+        {
+          "id": "w41_3_32",
+          "en": "cool",
+          "zh": "凉爽的",
+          "emoji": "😎"
+        }
+      ],
+      "4": [
+        {
+          "id": "w41_4_1",
+          "en": "season",
+          "zh": "季节",
+          "emoji": "🍂"
+        },
+        {
+          "id": "w41_4_2",
+          "en": "spring",
+          "zh": "春天，春季",
+          "emoji": "🌸"
+        },
+        {
+          "id": "w41_4_3",
+          "en": "summer",
+          "zh": "夏天，夏季",
+          "emoji": "🌞"
+        },
+        {
+          "id": "w41_4_4",
+          "en": "autumn",
+          "zh": "秋天，秋季",
+          "emoji": "🍁"
+        },
+        {
+          "id": "w41_4_5",
+          "en": "winter",
+          "zh": "冬天，冬季",
+          "emoji": "⛄"
+        },
+        {
+          "id": "w41_4_6",
+          "en": "favourite",
+          "zh": "最喜欢的",
+          "emoji": "❤️"
+        },
+        {
+          "id": "w41_4_7",
+          "en": "birthday",
+          "zh": "生日",
+          "emoji": "🎂"
+        },
+        {
+          "id": "w41_4_8",
+          "en": "fly",
+          "zh": "放飞",
+          "emoji": "🪁"
+        },
+        {
+          "id": "w41_4_9",
+          "en": "fly kites",
+          "zh": "放风筝",
+          "emoji": "🪁"
+        },
+        {
+          "id": "w41_4_10",
+          "en": "snowstorm",
+          "zh": "雪暴，暴风雪",
+          "emoji": "🌨️"
+        },
+        {
+          "id": "w41_4_11",
+          "en": "beach",
+          "zh": "海滩",
+          "emoji": "🏖️"
+        },
+        {
+          "id": "w41_4_12",
+          "en": "sea",
+          "zh": "海，海洋",
+          "emoji": "🌊"
+        },
+        {
+          "id": "w41_4_13",
+          "en": "equator",
+          "zh": "赤道",
+          "emoji": "🌍"
+        },
+        {
+          "id": "w41_4_14",
+          "en": "round",
+          "zh": "到处",
+          "emoji": "🔄"
+        },
+        {
+          "id": "w41_4_15",
+          "en": "quite",
+          "zh": "非常，十分",
+          "emoji": "💯"
+        },
+        {
+          "id": "w41_4_16",
+          "en": "join",
+          "zh": "参与，加入",
+          "emoji": "🤝"
+        }
+      ],
+      "5": [
+        {
+          "id": "w41_5_1",
+          "en": "bus",
+          "zh": "公交车，公共汽车",
+          "emoji": "🚌"
+        },
+        {
+          "id": "w41_5_2",
+          "en": "car",
+          "zh": "汽车",
+          "emoji": "🚗"
+        },
+        {
+          "id": "w41_5_3",
+          "en": "train",
+          "zh": "火车，列车",
+          "emoji": "🚂"
+        },
+        {
+          "id": "w41_5_4",
+          "en": "city",
+          "zh": "城市",
+          "emoji": "🏙️"
+        },
+        {
+          "id": "w41_5_5",
+          "en": "town",
+          "zh": "镇，城镇",
+          "emoji": "🏘️"
+        },
+        {
+          "id": "w41_5_6",
+          "en": "plane",
+          "zh": "飞机",
+          "emoji": "✈️"
+        },
+        {
+          "id": "w41_5_7",
+          "en": "sky",
+          "zh": "天，天空",
+          "emoji": "🌌"
+        },
+        {
+          "id": "w41_5_8",
+          "en": "ship",
+          "zh": "大船",
+          "emoji": "🚢"
+        },
+        {
+          "id": "w41_5_9",
+          "en": "place",
+          "zh": "地方，地点",
+          "emoji": "📍"
+        },
+        {
+          "id": "w41_5_10",
+          "en": "near",
+          "zh": "（距离）近的",
+          "emoji": "📍"
+        },
+        {
+          "id": "w41_5_11",
+          "en": "travel",
+          "zh": "旅行",
+          "emoji": "🧳"
+        },
+        {
+          "id": "w41_5_12",
+          "en": "way",
+          "zh": "方式，方法",
+          "emoji": "🗺️"
+        },
+        {
+          "id": "w41_5_13",
+          "en": "picnic",
+          "zh": "野餐",
+          "emoji": "🧺"
+        },
+        {
+          "id": "w41_5_14",
+          "en": "minute",
+          "zh": "分钟",
+          "emoji": "⏱️"
+        },
+        {
+          "id": "w41_5_15",
+          "en": "wear",
+          "zh": "穿",
+          "emoji": "👕"
+        },
+        {
+          "id": "w41_5_16",
+          "en": "live",
+          "zh": "住，居住",
+          "emoji": "🏠"
+        },
+        {
+          "id": "w41_5_17",
+          "en": "away",
+          "zh": "离开，相距",
+          "emoji": "🚶"
+        },
+        {
+          "id": "w41_5_18",
+          "en": "truck",
+          "zh": "货车，卡车",
+          "emoji": "🚚"
+        },
+        {
+          "id": "w41_5_19",
+          "en": "bamboo",
+          "zh": "竹，竹子",
+          "emoji": "🎋"
+        },
+        {
+          "id": "w41_5_20",
+          "en": "airport",
+          "zh": "机场",
+          "emoji": "🛫"
+        },
+        {
+          "id": "w41_5_21",
+          "en": "bike",
+          "zh": "自行车",
+          "emoji": "🚲"
+        },
+        {
+          "id": "w41_5_22",
+          "en": "ring",
+          "zh": "（钟、铃）鸣响",
+          "emoji": "🔔"
+        },
+        {
+          "id": "w41_5_23",
+          "en": "beep",
+          "zh": "（使）（汽车喇叭）鸣响",
+          "emoji": "🔊"
+        },
+        {
+          "id": "w41_5_24",
+          "en": "subway",
+          "zh": "地铁",
+          "emoji": "🚇"
+        },
+        {
+          "id": "w41_5_25",
+          "en": "whoosh",
+          "zh": "（呼呼地）飞快移动",
+          "emoji": "💨"
+        },
+        {
+          "id": "w41_5_26",
+          "en": "tram",
+          "zh": "有轨电车",
+          "emoji": "🚊"
+        },
+        {
+          "id": "w41_5_27",
+          "en": "chug",
+          "zh": "（汽车、火车等）突突地缓慢前进",
+          "emoji": "🚆"
+        }
+      ],
+      "6": [
+        {
+          "id": "w41_6_1",
+          "en": "wheel",
+          "zh": "车轮",
+          "emoji": "⚙️"
+        },
+        {
+          "id": "w41_6_2",
+          "en": "left",
+          "zh": "向左，朝左",
+          "emoji": "👈"
+        },
+        {
+          "id": "w41_6_3",
+          "en": "straight",
+          "zh": "笔直地",
+          "emoji": "➡️"
+        },
+        {
+          "id": "w41_6_4",
+          "en": "library",
+          "zh": "图书室；图书馆",
+          "emoji": "📚"
+        },
+        {
+          "id": "w41_6_5",
+          "en": "centre",
+          "zh": "中心",
+          "emoji": "🎯"
+        },
+        {
+          "id": "w41_6_6",
+          "en": "cinema",
+          "zh": "电影院",
+          "emoji": "🎬"
+        },
+        {
+          "id": "w41_6_7",
+          "en": "hospital",
+          "zh": "医院",
+          "emoji": "🏥"
+        },
+        {
+          "id": "w41_6_8",
+          "en": "supermarket",
+          "zh": "超市",
+          "emoji": "🛒"
+        },
+        {
+          "id": "w41_6_9",
+          "en": "museum",
+          "zh": "博物馆，博物院",
+          "emoji": "🏛️"
+        },
+        {
+          "id": "w41_6_10",
+          "en": "tomorrow",
+          "zh": "明天",
+          "emoji": "🌅"
+        },
+        {
+          "id": "w41_6_11",
+          "en": "woman",
+          "zh": "女性，女人",
+          "emoji": "👩"
+        },
+        {
+          "id": "w41_6_12",
+          "en": "excuse",
+          "zh": "原谅",
+          "emoji": "🙏"
+        },
+        {
+          "id": "w41_6_13",
+          "en": "excuse me",
+          "zh": "劳驾",
+          "emoji": "🙏"
+        },
+        {
+          "id": "w41_6_14",
+          "en": "wish",
+          "zh": "希望，愿望",
+          "emoji": "🌠"
+        },
+        {
+          "id": "w41_6_15",
+          "en": "true",
+          "zh": "真的，真实的",
+          "emoji": "✅"
+        },
+        {
+          "id": "w41_6_16",
+          "en": "step",
+          "zh": "步",
+          "emoji": "👣"
+        },
+        {
+          "id": "w41_6_17",
+          "en": "own",
+          "zh": "自己的",
+          "emoji": "🔑"
+        },
+        {
+          "id": "w41_6_18",
+          "en": "cross",
+          "zh": "横穿",
+          "emoji": "🚸"
+        },
+        {
+          "id": "w41_6_19",
+          "en": "careful",
+          "zh": "谨慎的",
+          "emoji": "👀"
+        },
+        {
+          "id": "w41_6_20",
+          "en": "be careful",
+          "zh": "当心，小心",
+          "emoji": "⚠️"
+        },
+        {
+          "id": "w41_6_21",
+          "en": "underground",
+          "zh": "在地（面）下",
+          "emoji": "🕳️"
+        },
+        {
+          "id": "w41_6_22",
+          "en": "road",
+          "zh": "道路；公路",
+          "emoji": "🛣️"
+        },
+        {
+          "id": "w41_6_23",
+          "en": "bookshop",
+          "zh": "书店",
+          "emoji": "📕"
+        },
+        {
+          "id": "w41_6_24",
+          "en": "restaurant",
+          "zh": "餐馆；饭店",
+          "emoji": "🍴"
+        }
+      ]
+    }
+  },
+  "4-2": {
+    "label": "四年级·下",
+    "units": {
+      "1": [
+        {
+          "id": "w42_1_1",
+          "en": "doctor",
+          "zh": "医生，大夫",
+          "emoji": "🩺"
+        },
+        {
+          "id": "w42_1_2",
+          "en": "fireman",
+          "zh": "消防队员",
+          "emoji": "🚒"
+        },
+        {
+          "id": "w42_1_3",
+          "en": "farmer",
+          "zh": "农民",
+          "emoji": "👨‍🌾"
+        },
+        {
+          "id": "w42_1_4",
+          "en": "cook",
+          "zh": "厨师，炊事员",
+          "emoji": "👨‍🍳"
+        },
+        {
+          "id": "w42_1_5",
+          "en": "police",
+          "zh": "警察",
+          "emoji": "👮"
+        },
+        {
+          "id": "w42_1_6",
+          "en": "police officer",
+          "zh": "警察，警官",
+          "emoji": "🚔"
+        },
+        {
+          "id": "w42_1_7",
+          "en": "station",
+          "zh": "所；站；台；局",
+          "emoji": "🚉"
+        },
+        {
+          "id": "w42_1_8",
+          "en": "police station",
+          "zh": "警察局，派出所",
+          "emoji": "🚓"
+        },
+        {
+          "id": "w42_1_9",
+          "en": "fire",
+          "zh": "火",
+          "emoji": "🔥"
+        },
+        {
+          "id": "w42_1_10",
+          "en": "fire station",
+          "zh": "消防站",
+          "emoji": "🏢"
+        },
+        {
+          "id": "w42_1_11",
+          "en": "restaurant",
+          "zh": "饭店，餐馆",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w42_1_12",
+          "en": "father",
+          "zh": "父亲，爸爸",
+          "emoji": "👨"
+        },
+        {
+          "id": "w42_1_13",
+          "en": "field",
+          "zh": "田地，田野",
+          "emoji": "🏞️"
+        },
+        {
+          "id": "w42_1_14",
+          "en": "painter",
+          "zh": "画家",
+          "emoji": "🎨"
+        },
+        {
+          "id": "w42_1_15",
+          "en": "use",
+          "zh": "用，使用",
+          "emoji": "🔧"
+        },
+        {
+          "id": "w42_1_16",
+          "en": "brush",
+          "zh": "刷子；画笔",
+          "emoji": "🖌️"
+        },
+        {
+          "id": "w42_1_17",
+          "en": "scientist",
+          "zh": "科学家",
+          "emoji": "🔬"
+        },
+        {
+          "id": "w42_1_18",
+          "en": "writer",
+          "zh": "作家",
+          "emoji": "✍️"
+        },
+        {
+          "id": "w42_1_19",
+          "en": "worker",
+          "zh": "技术工人",
+          "emoji": "👷"
+        },
+        {
+          "id": "w42_1_20",
+          "en": "aunt",
+          "zh": "姑母，姨母",
+          "emoji": "👩"
+        },
+        {
+          "id": "w42_1_21",
+          "en": "night",
+          "zh": "夜间，夜晚",
+          "emoji": "🌃"
+        },
+        {
+          "id": "w42_1_22",
+          "en": "owl",
+          "zh": "猫头鹰",
+          "emoji": "🦉"
+        },
+        {
+          "id": "w42_1_23",
+          "en": "night owl",
+          "zh": "夜猫子，喜欢熬夜的人",
+          "emoji": "🌙"
+        },
+        {
+          "id": "w42_1_24",
+          "en": "driver",
+          "zh": "司机，驾驶员",
+          "emoji": "🚗"
+        },
+        {
+          "id": "w42_1_25",
+          "en": "taxi",
+          "zh": "出租车，计程车",
+          "emoji": "🚕"
+        },
+        {
+          "id": "w42_1_26",
+          "en": "safe",
+          "zh": "安全的；平安无事的",
+          "emoji": "🛡️"
+        },
+        {
+          "id": "w42_1_27",
+          "en": "nurse",
+          "zh": "护士",
+          "emoji": "👩‍⚕️"
+        },
+        {
+          "id": "w42_1_28",
+          "en": "brighten",
+          "zh": "使更明亮",
+          "emoji": "💡"
+        },
+        {
+          "id": "w42_1_29",
+          "en": "uncle",
+          "zh": "叔叔，伯伯",
+          "emoji": "🧔"
+        },
+        {
+          "id": "w42_1_30",
+          "en": "bake",
+          "zh": "烘，烤，焙",
+          "emoji": "🥖"
+        },
+        {
+          "id": "w42_1_31",
+          "en": "bee",
+          "zh": "蜜蜂",
+          "emoji": "🐝"
+        },
+        {
+          "id": "w42_1_32",
+          "en": "postman",
+          "zh": "邮递员",
+          "emoji": "📮"
+        },
+        {
+          "id": "w42_1_33",
+          "en": "poor",
+          "zh": "贫穷的，贫困的",
+          "emoji": "🤲"
+        },
+        {
+          "id": "w42_1_34",
+          "en": "bring",
+          "zh": "带来；拿来",
+          "emoji": "📦"
+        },
+        {
+          "id": "w42_1_35",
+          "en": "letter",
+          "zh": "信，函",
+          "emoji": "✉️"
+        },
+        {
+          "id": "w42_1_36",
+          "en": "mountain",
+          "zh": "高山",
+          "emoji": "⛰️"
+        }
+      ],
+      "2": [
+        {
+          "id": "w42_2_1",
+          "en": "laugh",
+          "zh": "发出笑声，（大）笑",
+          "emoji": "😂"
+        },
+        {
+          "id": "w42_2_2",
+          "en": "sad",
+          "zh": "不愉快的，伤心的，难过的",
+          "emoji": "😢"
+        },
+        {
+          "id": "w42_2_3",
+          "en": "cry",
+          "zh": "哭，哭泣",
+          "emoji": "😭"
+        },
+        {
+          "id": "w42_2_4",
+          "en": "angry",
+          "zh": "发怒的，生气的，气愤的",
+          "emoji": "😠"
+        },
+        {
+          "id": "w42_2_5",
+          "en": "frown",
+          "zh": "皱眉",
+          "emoji": "🙍"
+        },
+        {
+          "id": "w42_2_6",
+          "en": "scared",
+          "zh": "害怕的，恐惧的；紧张的",
+          "emoji": "😨"
+        },
+        {
+          "id": "w42_2_7",
+          "en": "shake",
+          "zh": "发抖，颤抖",
+          "emoji": "🥶"
+        },
+        {
+          "id": "w42_2_8",
+          "en": "excited",
+          "zh": "兴奋的，激动的",
+          "emoji": "🤩"
+        },
+        {
+          "id": "w42_2_9",
+          "en": "opera",
+          "zh": "歌剧；歌剧艺术",
+          "emoji": "🎭"
+        },
+        {
+          "id": "w42_2_10",
+          "en": "next",
+          "zh": "（时间）紧接着的；下次的",
+          "emoji": "➡️"
+        },
+        {
+          "id": "w42_2_11",
+          "en": "cough",
+          "zh": "咳嗽，咳",
+          "emoji": "🤧"
+        },
+        {
+          "id": "w42_2_12",
+          "en": "better",
+          "zh": "（健康状况）好转的；（疼痛等）减轻的",
+          "emoji": "👍"
+        },
+        {
+          "id": "w42_2_13",
+          "en": "practise",
+          "zh": "练习，实践，实习",
+          "emoji": "🎯"
+        },
+        {
+          "id": "w42_2_14",
+          "en": "gift",
+          "zh": "礼物",
+          "emoji": "🎁"
+        },
+        {
+          "id": "w42_2_15",
+          "en": "surprised",
+          "zh": "吃惊的，惊奇的",
+          "emoji": "😲"
+        },
+        {
+          "id": "w42_2_16",
+          "en": "model",
+          "zh": "（尤指可拼装的）模型",
+          "emoji": "🧱"
+        },
+        {
+          "id": "w42_2_17",
+          "en": "bang",
+          "zh": "砰，啪",
+          "emoji": "💥"
+        },
+        {
+          "id": "w42_2_18",
+          "en": "shout",
+          "zh": "大声说，喊叫，呼喊",
+          "emoji": "📢"
+        },
+        {
+          "id": "w42_2_19",
+          "en": "should",
+          "zh": "应当，应该",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w42_2_20",
+          "en": "break",
+          "zh": "使破裂，使破碎；使断裂",
+          "emoji": "🔨"
+        },
+        {
+          "id": "w42_2_21",
+          "en": "feeling",
+          "zh": "感觉，感触",
+          "emoji": "💗"
+        },
+        {
+          "id": "w42_2_22",
+          "en": "huge",
+          "zh": "巨大的",
+          "emoji": "🐘"
+        },
+        {
+          "id": "w42_2_23",
+          "en": "worried",
+          "zh": "担心的，焦虑的",
+          "emoji": "😰"
+        },
+        {
+          "id": "w42_2_24",
+          "en": "street",
+          "zh": "大街，街道",
+          "emoji": "🛣️"
+        },
+        {
+          "id": "w42_2_25",
+          "en": "hit",
+          "zh": "撞击，碰撞",
+          "emoji": "🥊"
+        }
+      ],
+      "3": [
+        {
+          "id": "w42_3_1",
+          "en": "talent",
+          "zh": "天资，天赋，才能",
+          "emoji": "🌟"
+        },
+        {
+          "id": "w42_3_2",
+          "en": "act",
+          "zh": "演出；扮演",
+          "emoji": "🎪"
+        },
+        {
+          "id": "w42_3_3",
+          "en": "magic",
+          "zh": "魔术，戏法",
+          "emoji": "🪄"
+        },
+        {
+          "id": "w42_3_4",
+          "en": "shine",
+          "zh": "表现突出，出众",
+          "emoji": "✨"
+        },
+        {
+          "id": "w42_3_5",
+          "en": "puzzle",
+          "zh": "拼图游戏",
+          "emoji": "🧩"
+        },
+        {
+          "id": "w42_3_6",
+          "en": "dancer",
+          "zh": "舞蹈演员",
+          "emoji": "💃"
+        },
+        {
+          "id": "w42_3_7",
+          "en": "win",
+          "zh": "获胜，赢",
+          "emoji": "🏆"
+        },
+        {
+          "id": "w42_3_8",
+          "en": "just",
+          "zh": "就，只是",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w42_3_9",
+          "en": "duck",
+          "zh": "鸭",
+          "emoji": "🦆"
+        },
+        {
+          "id": "w42_3_10",
+          "en": "boy",
+          "zh": "男孩；儿子",
+          "emoji": "👦"
+        },
+        {
+          "id": "w42_3_11",
+          "en": "anything",
+          "zh": "任何事情，无论何事",
+          "emoji": "🤷"
+        },
+        {
+          "id": "w42_3_12",
+          "en": "cock-a-doodle-doo",
+          "zh": "（公鸡啼叫的）喔喔声",
+          "emoji": "🐔"
+        },
+        {
+          "id": "w42_3_13",
+          "en": "enough",
+          "zh": "足够（的）",
+          "emoji": "✅"
+        },
+        {
+          "id": "w42_3_14",
+          "en": "slowly",
+          "zh": "缓慢地，慢慢地",
+          "emoji": "🐢"
+        }
+      ],
+      "4": [
+        {
+          "id": "w42_4_1",
+          "en": "life",
+          "zh": "一生，生活",
+          "emoji": "❤️"
+        },
+        {
+          "id": "w42_4_2",
+          "en": "seed",
+          "zh": "种子，籽",
+          "emoji": "🌱"
+        },
+        {
+          "id": "w42_4_3",
+          "en": "earth",
+          "zh": "泥土，土壤",
+          "emoji": "🟫"
+        },
+        {
+          "id": "w42_4_4",
+          "en": "root",
+          "zh": "根",
+          "emoji": "🌳"
+        },
+        {
+          "id": "w42_4_5",
+          "en": "stem",
+          "zh": "（植物的）茎，梗，柄",
+          "emoji": "🌿"
+        },
+        {
+          "id": "w42_4_6",
+          "en": "thin",
+          "zh": "细的",
+          "emoji": "➖"
+        },
+        {
+          "id": "w42_4_7",
+          "en": "leaf",
+          "zh": "叶，叶子",
+          "emoji": "🍃"
+        },
+        {
+          "id": "w42_4_8",
+          "en": "dig",
+          "zh": "挖，掘",
+          "emoji": "⛏️"
+        },
+        {
+          "id": "w42_4_9",
+          "en": "sunflower",
+          "zh": "向日葵",
+          "emoji": "🌻"
+        },
+        {
+          "id": "w42_4_10",
+          "en": "wheat",
+          "zh": "小麦",
+          "emoji": "🍞"
+        },
+        {
+          "id": "w42_4_11",
+          "en": "cotton",
+          "zh": "棉花，棉株",
+          "emoji": "☁️"
+        },
+        {
+          "id": "w42_4_12",
+          "en": "sleep",
+          "zh": "睡，睡觉",
+          "emoji": "😴"
+        },
+        {
+          "id": "w42_4_13",
+          "en": "mouse",
+          "zh": "老鼠",
+          "emoji": "🐭"
+        },
+        {
+          "id": "w42_4_14",
+          "en": "grain",
+          "zh": "谷粒",
+          "emoji": "🌾"
+        },
+        {
+          "id": "w42_4_15",
+          "en": "miss",
+          "zh": "想念，思念，怀念（某人）",
+          "emoji": "💔"
+        },
+        {
+          "id": "w42_4_16",
+          "en": "will",
+          "zh": "将，会，要（用于构成将来时）",
+          "emoji": "🔮"
+        },
+        {
+          "id": "w42_4_17",
+          "en": "everything",
+          "zh": "每件事物；所有事物",
+          "emoji": "🌈"
+        },
+        {
+          "id": "w42_4_18",
+          "en": "cabbage",
+          "zh": "卷心菜，洋白菜，甘蓝",
+          "emoji": "🥬"
+        },
+        {
+          "id": "w42_4_19",
+          "en": "paper",
+          "zh": "纸",
+          "emoji": "📄"
+        }
+      ],
+      "5": [
+        {
+          "id": "w42_5_1",
+          "en": "event",
+          "zh": "活动，事件",
+          "emoji": "📅"
+        },
+        {
+          "id": "w42_5_2",
+          "en": "drama",
+          "zh": "戏剧",
+          "emoji": "🎬"
+        },
+        {
+          "id": "w42_5_3",
+          "en": "trip",
+          "zh": "旅游；旅行，出行",
+          "emoji": "✈️"
+        },
+        {
+          "id": "w42_5_4",
+          "en": "fair",
+          "zh": "户外游艺会；义卖会；集市",
+          "emoji": "🎡"
+        },
+        {
+          "id": "w42_5_5",
+          "en": "festival",
+          "zh": "节，节庆，汇演",
+          "emoji": "🎉"
+        },
+        {
+          "id": "w42_5_6",
+          "en": "horn",
+          "zh": "角",
+          "emoji": "🎺"
+        },
+        {
+          "id": "w42_5_7",
+          "en": "dot",
+          "zh": "点，小圆点",
+          "emoji": "⚫"
+        },
+        {
+          "id": "w42_5_8",
+          "en": "raindrop",
+          "zh": "雨点，雨滴",
+          "emoji": "💧"
+        },
+        {
+          "id": "w42_5_9",
+          "en": "more",
+          "zh": "更多的",
+          "emoji": "➕"
+        },
+        {
+          "id": "w42_5_10",
+          "en": "write",
+          "zh": "书写；写字",
+          "emoji": "📝"
+        },
+        {
+          "id": "w42_5_11",
+          "en": "those",
+          "zh": "那些（that的复数形式）",
+          "emoji": "👉"
+        },
+        {
+          "id": "w42_5_12",
+          "en": "forest",
+          "zh": "森林，林区",
+          "emoji": "🌲"
+        },
+        {
+          "id": "w42_5_13",
+          "en": "nature",
+          "zh": "大自然",
+          "emoji": "🌍"
+        },
+        {
+          "id": "w42_5_14",
+          "en": "hunt",
+          "zh": "搜寻，寻找",
+          "emoji": "🔍"
+        },
+        {
+          "id": "w42_5_15",
+          "en": "keeper",
+          "zh": "看守人，保管人",
+          "emoji": "💂"
+        },
+        {
+          "id": "w42_5_16",
+          "en": "lovely",
+          "zh": "美好的；令人愉快的；可爱的",
+          "emoji": "💖"
+        },
+        {
+          "id": "w42_5_17",
+          "en": "student",
+          "zh": "学生",
+          "emoji": "🧑‍🎓"
+        },
+        {
+          "id": "w42_5_18",
+          "en": "fall",
+          "zh": "落下，降落，跌落",
+          "emoji": "🍂"
+        },
+        {
+          "id": "w42_5_19",
+          "en": "off",
+          "zh": "不在（某物）上面；从（某物）上移开",
+          "emoji": "🔌"
+        },
+        {
+          "id": "w42_5_20",
+          "en": "fall off",
+          "zh": "（从某物上）掉下，脱落",
+          "emoji": "⬇️"
+        },
+        {
+          "id": "w42_5_21",
+          "en": "hour",
+          "zh": "小时",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w42_5_22",
+          "en": "culture",
+          "zh": "文化",
+          "emoji": "🏛️"
+        },
+        {
+          "id": "w42_5_23",
+          "en": "note",
+          "zh": "笔记，记录",
+          "emoji": "🗒️"
+        },
+        {
+          "id": "w42_5_24",
+          "en": "vote",
+          "zh": "选票",
+          "emoji": "🗳️"
+        }
+      ],
+      "6": [
+        {
+          "id": "w42_6_1",
+          "en": "T-shirt",
+          "zh": "T恤（衫）",
+          "emoji": "👕"
+        },
+        {
+          "id": "w42_6_2",
+          "en": "skirt",
+          "zh": "半身裙，裙子",
+          "emoji": "👗"
+        },
+        {
+          "id": "w42_6_3",
+          "en": "shorts",
+          "zh": "短裤",
+          "emoji": "🩳"
+        },
+        {
+          "id": "w42_6_4",
+          "en": "shirt",
+          "zh": "衬衫",
+          "emoji": "👔"
+        },
+        {
+          "id": "w42_6_5",
+          "en": "trousers",
+          "zh": "裤子",
+          "emoji": "👖"
+        },
+        {
+          "id": "w42_6_6",
+          "en": "scarf",
+          "zh": "围巾",
+          "emoji": "🧣"
+        },
+        {
+          "id": "w42_6_7",
+          "en": "sweater",
+          "zh": "毛线衣，羊毛衫，针织衫",
+          "emoji": "🧥"
+        },
+        {
+          "id": "w42_6_8",
+          "en": "party",
+          "zh": "聚会，宴会",
+          "emoji": "🥳"
+        },
+        {
+          "id": "w42_6_9",
+          "en": "dress",
+          "zh": "连衣裙",
+          "emoji": "👚"
+        },
+        {
+          "id": "w42_6_10",
+          "en": "end",
+          "zh": "最后部分，末尾",
+          "emoji": "🔚"
+        },
+        {
+          "id": "w42_6_11",
+          "en": "dressmaker",
+          "zh": "裁缝",
+          "emoji": "✂️"
+        },
+        {
+          "id": "w42_6_12",
+          "en": "Christmas",
+          "zh": "圣诞节",
+          "emoji": "🎄"
+        },
+        {
+          "id": "w42_6_13",
+          "en": "same",
+          "zh": "完全相同的，一模一样的",
+          "emoji": "🟰"
+        },
+        {
+          "id": "w42_6_14",
+          "en": "the same",
+          "zh": "同样",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w42_6_15",
+          "en": "wrong",
+          "zh": "不正确的，错误的",
+          "emoji": "❌"
+        },
+        {
+          "id": "w42_6_16",
+          "en": "clever",
+          "zh": "聪明的",
+          "emoji": "🧠"
+        },
+        {
+          "id": "w42_6_17",
+          "en": "Mr",
+          "zh": "先生",
+          "emoji": "🤵"
+        },
+        {
+          "id": "w42_6_18",
+          "en": "present",
+          "zh": "礼物",
+          "emoji": "🎀"
+        },
+        {
+          "id": "w42_6_19",
+          "en": "whale",
+          "zh": "鲸",
+          "emoji": "🐳"
+        },
+        {
+          "id": "w42_6_20",
+          "en": "uniform",
+          "zh": "制服",
+          "emoji": "🎽"
+        },
+        {
+          "id": "w42_6_21",
+          "en": "robe",
+          "zh": "长袍",
+          "emoji": "👘"
+        }
+      ]
+    }
+  },
+    "5-1": {
+    "label": "五年级·上",
+    "units": {
+      "1": [
+        {
+          "id": "w51_1_1",
+          "en": "met",
+          "zh": "碰上，遇见（meet过去式）",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w51_1_2",
+          "en": "above",
+          "zh": "在…上方，在…之上",
+          "emoji": "⬆️"
+        },
+        {
+          "id": "w51_1_3",
+          "en": "ground",
+          "zh": "地面",
+          "emoji": "🟫"
+        },
+        {
+          "id": "w51_1_4",
+          "en": "those",
+          "zh": "那些",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w51_1_5",
+          "en": "ice cream",
+          "zh": "冰激凌",
+          "emoji": "🍦"
+        },
+        {
+          "id": "w51_1_6",
+          "en": "us",
+          "zh": "（宾格）我们",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w51_1_7",
+          "en": "finish",
+          "zh": "吃完，喝完，用尽",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w51_1_8",
+          "en": "wait",
+          "zh": "等待，等候",
+          "emoji": "⏳"
+        },
+        {
+          "id": "w51_1_9",
+          "en": "hurry",
+          "zh": "赶紧，匆忙",
+          "emoji": "💨"
+        },
+        {
+          "id": "w51_1_10",
+          "en": "hurry up",
+          "zh": "赶紧，赶快",
+          "emoji": "💨"
+        },
+        {
+          "id": "w51_1_11",
+          "en": "dropped",
+          "zh": "（无意中）使掉落（drop过去式）",
+          "emoji": "💧"
+        },
+        {
+          "id": "w51_1_12",
+          "en": "email",
+          "zh": "电子邮件",
+          "emoji": "📧"
+        },
+        {
+          "id": "w51_1_13",
+          "en": "ran",
+          "zh": "跑（run过去式）",
+          "emoji": "🏃"
+        },
+        {
+          "id": "w51_1_14",
+          "en": "love",
+          "zh": "爱你的",
+          "emoji": "❤️"
+        }
+      ],
+      "2": [
+        {
+          "id": "w51_2_1",
+          "en": "list",
+          "zh": "清单",
+          "emoji": "📝"
+        },
+        {
+          "id": "w51_2_2",
+          "en": "er",
+          "zh": "哦，嗯，呃",
+          "emoji": "💬"
+        },
+        {
+          "id": "w51_2_3",
+          "en": "need",
+          "zh": "需要",
+          "emoji": "🤲"
+        },
+        {
+          "id": "w51_2_4",
+          "en": "first",
+          "zh": "首先，第一；最先的，第一（次）的",
+          "emoji": "1️⃣"
+        },
+        {
+          "id": "w51_2_5",
+          "en": "can",
+          "zh": "可以",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w51_2_6",
+          "en": "lost",
+          "zh": "丢失（lose过去式）",
+          "emoji": "🔍"
+        },
+        {
+          "id": "w51_2_7",
+          "en": "how much",
+          "zh": "多少（用于不可数名词）",
+          "emoji": "❓"
+        },
+        {
+          "id": "w51_2_8",
+          "en": "cheese",
+          "zh": "奶酪",
+          "emoji": "🧀"
+        },
+        {
+          "id": "w51_2_9",
+          "en": "any",
+          "zh": "一些，一点，若干",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w51_2_10",
+          "en": "use",
+          "zh": "使用",
+          "emoji": "🔧"
+        },
+        {
+          "id": "w51_2_11",
+          "en": "over there",
+          "zh": "在那边",
+          "emoji": "👉"
+        },
+        {
+          "id": "w51_2_12",
+          "en": "bottle",
+          "zh": "瓶子；一瓶的容量",
+          "emoji": "🍾"
+        },
+        {
+          "id": "w51_2_13",
+          "en": "half",
+          "zh": "一半",
+          "emoji": "🌓"
+        },
+        {
+          "id": "w51_2_14",
+          "en": "kilo",
+          "zh": "千克，公斤",
+          "emoji": "⚖️"
+        },
+        {
+          "id": "w51_2_15",
+          "en": "a lot of",
+          "zh": "许多的",
+          "emoji": "💯"
+        }
+      ],
+      "3": [
+        {
+          "id": "w51_3_1",
+          "en": "weekend",
+          "zh": "周末",
+          "emoji": "📅"
+        },
+        {
+          "id": "w51_3_2",
+          "en": "place",
+          "zh": "地方",
+          "emoji": "📍"
+        },
+        {
+          "id": "w51_3_3",
+          "en": "British",
+          "zh": "英国的，英国人的，英国人",
+          "emoji": "🇬🇧"
+        },
+        {
+          "id": "w51_3_4",
+          "en": "museum",
+          "zh": "博物馆",
+          "emoji": "🏛️"
+        },
+        {
+          "id": "w51_3_5",
+          "en": "how",
+          "zh": "如何，怎样",
+          "emoji": "❓"
+        },
+        {
+          "id": "w51_3_6",
+          "en": "best",
+          "zh": "最",
+          "emoji": "🏆"
+        },
+        {
+          "id": "w51_3_7",
+          "en": "took",
+          "zh": "搭乘，乘坐（交通工具）；需要花费（一定时间）（take过去式）",
+          "emoji": "🚌"
+        },
+        {
+          "id": "w51_3_8",
+          "en": "trip",
+          "zh": "旅行，旅程",
+          "emoji": "✈️"
+        },
+        {
+          "id": "w51_3_9",
+          "en": "along",
+          "zh": "沿着",
+          "emoji": "↔️"
+        },
+        {
+          "id": "w51_3_10",
+          "en": "river",
+          "zh": "河，江",
+          "emoji": "🌊"
+        },
+        {
+          "id": "w51_3_11",
+          "en": "hour",
+          "zh": "小时",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w51_3_12",
+          "en": "twenty",
+          "zh": "二十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_3_13",
+          "en": "minute",
+          "zh": "分钟",
+          "emoji": "⏱️"
+        },
+        {
+          "id": "w51_3_14",
+          "en": "of",
+          "zh": "关于…的，表明…的",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w51_3_15",
+          "en": "wall",
+          "zh": "墙，城墙",
+          "emoji": "🧱"
+        },
+        {
+          "id": "w51_3_16",
+          "en": "arrive",
+          "zh": "到达",
+          "emoji": "🛬"
+        },
+        {
+          "id": "w51_3_17",
+          "en": "for",
+          "zh": "达，计",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w51_3_18",
+          "en": "mountain",
+          "zh": "山",
+          "emoji": "⛰️"
+        },
+        {
+          "id": "w51_3_19",
+          "en": "with",
+          "zh": "拥有，具有",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w51_3_20",
+          "en": "plant",
+          "zh": "植物",
+          "emoji": "🌱"
+        }
+      ],
+      "4": [
+        {
+          "id": "w51_4_1",
+          "en": "pair",
+          "zh": "一套，一双，一副",
+          "emoji": "👟"
+        },
+        {
+          "id": "w51_4_2",
+          "en": "shorts",
+          "zh": "（常复）短裤",
+          "emoji": "🩳"
+        },
+        {
+          "id": "w51_4_3",
+          "en": "argue",
+          "zh": "争论，争吵",
+          "emoji": "💢"
+        },
+        {
+          "id": "w51_4_4",
+          "en": "matter",
+          "zh": "问题，麻烦",
+          "emoji": "⚠️"
+        },
+        {
+          "id": "w51_4_5",
+          "en": "What's the matter?",
+          "zh": "怎么啦？",
+          "emoji": "❓"
+        },
+        {
+          "id": "w51_4_6",
+          "en": "took",
+          "zh": "拿（走），取（走）（take过去式）",
+          "emoji": "👜"
+        },
+        {
+          "id": "w51_4_7",
+          "en": "wear",
+          "zh": "穿",
+          "emoji": "👕"
+        },
+        {
+          "id": "w51_4_8",
+          "en": "That's OK",
+          "zh": "没关系",
+          "emoji": "👌"
+        },
+        {
+          "id": "w51_4_9",
+          "en": "sports",
+          "zh": "体育运动的，体育运动用的",
+          "emoji": "⚽"
+        },
+        {
+          "id": "w51_4_10",
+          "en": "hey",
+          "zh": "嘿，喂",
+          "emoji": "💬"
+        }
+      ],
+      "5": [
+        {
+          "id": "w51_5_1",
+          "en": "nineteen",
+          "zh": "十九",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_2",
+          "en": "crayon",
+          "zh": "蜡笔",
+          "emoji": "🖍️"
+        },
+        {
+          "id": "w51_5_3",
+          "en": "fifteen",
+          "zh": "十五",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_4",
+          "en": "begin",
+          "zh": "开始",
+          "emoji": "🎬"
+        },
+        {
+          "id": "w51_5_5",
+          "en": "give out",
+          "zh": "分发",
+          "emoji": "📤"
+        },
+        {
+          "id": "w51_5_6",
+          "en": "all right",
+          "zh": "好，行",
+          "emoji": "👌"
+        },
+        {
+          "id": "w51_5_7",
+          "en": "thirteen",
+          "zh": "十三",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_8",
+          "en": "fourteen",
+          "zh": "十四",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_9",
+          "en": "sixteen",
+          "zh": "十六",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_10",
+          "en": "seventeen",
+          "zh": "十七",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_11",
+          "en": "eighteen",
+          "zh": "十八",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_12",
+          "en": "floor",
+          "zh": "地面，地板",
+          "emoji": "🟫"
+        },
+        {
+          "id": "w51_5_13",
+          "en": "forty",
+          "zh": "四十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_14",
+          "en": "number",
+          "zh": "数字",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_15",
+          "en": "thirty",
+          "zh": "三十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_16",
+          "en": "fifty",
+          "zh": "五十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_17",
+          "en": "sixty",
+          "zh": "六十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_18",
+          "en": "seventy",
+          "zh": "七十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_19",
+          "en": "eighty",
+          "zh": "八十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_20",
+          "en": "ninety",
+          "zh": "九十",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w51_5_21",
+          "en": "happily",
+          "zh": "幸福地，愉快地",
+          "emoji": "😊"
+        },
+        {
+          "id": "w51_5_22",
+          "en": "many",
+          "zh": "许多，很多",
+          "emoji": "💯"
+        }
+      ],
+      "6": [
+        {
+          "id": "w51_6_1",
+          "en": "well",
+          "zh": "好，熟练地",
+          "emoji": "👍"
+        },
+        {
+          "id": "w51_6_2",
+          "en": "team",
+          "zh": "运动队，球队",
+          "emoji": "👥"
+        },
+        {
+          "id": "w51_6_3",
+          "en": "really",
+          "zh": "很，非常",
+          "emoji": "💯"
+        },
+        {
+          "id": "w51_6_4",
+          "en": "good at",
+          "zh": "擅长",
+          "emoji": "🌟"
+        },
+        {
+          "id": "w51_6_5",
+          "en": "catch",
+          "zh": "抓住，接住",
+          "emoji": "🤾"
+        },
+        {
+          "id": "w51_6_6",
+          "en": "goalkeeper",
+          "zh": "守门员",
+          "emoji": "🧤"
+        },
+        {
+          "id": "w51_6_7",
+          "en": "think",
+          "zh": "想，认为",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w51_6_8",
+          "en": "fantastic",
+          "zh": "极好的",
+          "emoji": "🌟"
+        },
+        {
+          "id": "w51_6_9",
+          "en": "fan",
+          "zh": "狂热仰慕者，迷",
+          "emoji": "🤩"
+        },
+        {
+          "id": "w51_6_10",
+          "en": "past",
+          "zh": "过去",
+          "emoji": "⏪"
+        },
+        {
+          "id": "w51_6_11",
+          "en": "swam",
+          "zh": "游泳（swim过去式）",
+          "emoji": "🏊"
+        },
+        {
+          "id": "w51_6_12",
+          "en": "slow",
+          "zh": "慢的",
+          "emoji": "🐢"
+        },
+        {
+          "id": "w51_6_13",
+          "en": "healthy",
+          "zh": "健康的",
+          "emoji": "💪"
+        }
+      ],
+      "7": [
+        {
+          "id": "w51_7_1",
+          "en": "a lot",
+          "zh": "许多，大量",
+          "emoji": "💯"
+        },
+        {
+          "id": "w51_7_2",
+          "en": "useful",
+          "zh": "有用的",
+          "emoji": "🔧"
+        },
+        {
+          "id": "w51_7_3",
+          "en": "show",
+          "zh": "（电视或广播）节目",
+          "emoji": "📺"
+        },
+        {
+          "id": "w51_7_4",
+          "en": "presenter",
+          "zh": "（电视或广播节目的）主持人",
+          "emoji": "🎤"
+        },
+        {
+          "id": "w51_7_5",
+          "en": "blind",
+          "zh": "失明的，瞎的",
+          "emoji": "🦯"
+        },
+        {
+          "id": "w51_7_6",
+          "en": "deaf",
+          "zh": "失聪的，聋的",
+          "emoji": "🔇"
+        },
+        {
+          "id": "w51_7_7",
+          "en": "hear",
+          "zh": "听到",
+          "emoji": "👂"
+        },
+        {
+          "id": "w51_7_8",
+          "en": "her",
+          "zh": "（宾格）她",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w51_7_9",
+          "en": "fire",
+          "zh": "火灾，失火",
+          "emoji": "🔥"
+        },
+        {
+          "id": "w51_7_10",
+          "en": "firefighter",
+          "zh": "消防队员",
+          "emoji": "🚒"
+        },
+        {
+          "id": "w51_7_11",
+          "en": "hot dog",
+          "zh": "热狗",
+          "emoji": "🌭"
+        },
+        {
+          "id": "w51_7_12",
+          "en": "sausage",
+          "zh": "香肠",
+          "emoji": "🥓"
+        },
+        {
+          "id": "w51_7_13",
+          "en": "kind",
+          "zh": "友好的，善意的，体贴的",
+          "emoji": "💗"
+        }
+      ],
+      "8": [
+        {
+          "id": "w51_8_1",
+          "en": "time",
+          "zh": "时刻，时候，时间",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w51_8_2",
+          "en": "school",
+          "zh": "上课时间，上学时间",
+          "emoji": "🏫"
+        },
+        {
+          "id": "w51_8_3",
+          "en": "start",
+          "zh": "开始，发生",
+          "emoji": "🟢"
+        },
+        {
+          "id": "w51_8_4",
+          "en": "past",
+          "zh": "晚于，过（几点）",
+          "emoji": "🕐"
+        },
+        {
+          "id": "w51_8_5",
+          "en": "late",
+          "zh": "迟到的",
+          "emoji": "🐌"
+        },
+        {
+          "id": "w51_8_6",
+          "en": "go to bed",
+          "zh": "上床睡觉",
+          "emoji": "🛏️"
+        },
+        {
+          "id": "w51_8_7",
+          "en": "exercise",
+          "zh": "运动，锻炼",
+          "emoji": "🤸"
+        },
+        {
+          "id": "w51_8_8",
+          "en": "playground",
+          "zh": "操场",
+          "emoji": "🛝"
+        },
+        {
+          "id": "w51_8_9",
+          "en": "before",
+          "zh": "在…之前",
+          "emoji": "⏮️"
+        },
+        {
+          "id": "w51_8_10",
+          "en": "join",
+          "zh": "加入，参加",
+          "emoji": "➕"
+        },
+        {
+          "id": "w51_8_11",
+          "en": "skipping rope",
+          "zh": "跳绳",
+          "emoji": "🪢"
+        },
+        {
+          "id": "w51_8_12",
+          "en": "coffee",
+          "zh": "咖啡",
+          "emoji": "☕"
+        },
+        {
+          "id": "w51_8_13",
+          "en": "tea",
+          "zh": "茶",
+          "emoji": "🍵"
+        },
+        {
+          "id": "w51_8_14",
+          "en": "always",
+          "zh": "总是，一直",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w51_8_15",
+          "en": "bell",
+          "zh": "钟，铃",
+          "emoji": "🔔"
+        },
+        {
+          "id": "w51_8_16",
+          "en": "rang",
+          "zh": "鸣，响（ring过去式）",
+          "emoji": "🔔"
+        },
+        {
+          "id": "w51_8_17",
+          "en": "into",
+          "zh": "进入…里面",
+          "emoji": "↘️"
+        }
+      ],
+      "9": [
+        {
+          "id": "w51_9_1",
+          "en": "feel",
+          "zh": "感觉，觉得",
+          "emoji": "💭"
+        },
+        {
+          "id": "w51_9_2",
+          "en": "bored",
+          "zh": "厌烦的，厌倦的",
+          "emoji": "🥱"
+        },
+        {
+          "id": "w51_9_3",
+          "en": "sad",
+          "zh": "伤心的，难过的",
+          "emoji": "😢"
+        },
+        {
+          "id": "w51_9_4",
+          "en": "woof",
+          "zh": "（狗发出的）吠声",
+          "emoji": "🐶"
+        },
+        {
+          "id": "w51_9_5",
+          "en": "miss",
+          "zh": "想念",
+          "emoji": "💔"
+        },
+        {
+          "id": "w51_9_6",
+          "en": "angry",
+          "zh": "生气的，愤怒的",
+          "emoji": "😡"
+        },
+        {
+          "id": "w51_9_7",
+          "en": "ill",
+          "zh": "有病的，不健康的",
+          "emoji": "🤒"
+        },
+        {
+          "id": "w51_9_8",
+          "en": "told",
+          "zh": "告诉（tell过去式）",
+          "emoji": "💬"
+        },
+        {
+          "id": "w51_9_9",
+          "en": "better",
+          "zh": "痊愈的，恢复健康的",
+          "emoji": "💊"
+        },
+        {
+          "id": "w51_9_10",
+          "en": "farm",
+          "zh": "农场",
+          "emoji": "🚜"
+        },
+        {
+          "id": "w51_9_11",
+          "en": "tired",
+          "zh": "累的，疲劳的",
+          "emoji": "😴"
+        },
+        {
+          "id": "w51_9_12",
+          "en": "won",
+          "zh": "赢，获胜（win过去式）",
+          "emoji": "🏆"
+        },
+        {
+          "id": "w51_9_13",
+          "en": "ruler",
+          "zh": "直尺",
+          "emoji": "📏"
+        },
+        {
+          "id": "w51_9_14",
+          "en": "smell",
+          "zh": "闻出，嗅出",
+          "emoji": "👃"
+        }
+      ],
+      "10": [
+        {
+          "id": "w51_10_1",
+          "en": "kitchen",
+          "zh": "厨房",
+          "emoji": "🍳"
+        },
+        {
+          "id": "w51_10_2",
+          "en": "toilet",
+          "zh": "厕所，卫生间",
+          "emoji": "🚽"
+        },
+        {
+          "id": "w51_10_3",
+          "en": "room",
+          "zh": "房间",
+          "emoji": "🚪"
+        },
+        {
+          "id": "w51_10_4",
+          "en": "living room",
+          "zh": "起居室，客厅",
+          "emoji": "🛋️"
+        },
+        {
+          "id": "w51_10_5",
+          "en": "hide-and-seek",
+          "zh": "捉迷藏",
+          "emoji": "🙈"
+        },
+        {
+          "id": "w51_10_6",
+          "en": "now",
+          "zh": "好，哦",
+          "emoji": "💬"
+        },
+        {
+          "id": "w51_10_7",
+          "en": "last",
+          "zh": "最后",
+          "emoji": "🏁"
+        },
+        {
+          "id": "w51_10_8",
+          "en": "hide",
+          "zh": "躲，躲藏",
+          "emoji": "🫣"
+        },
+        {
+          "id": "w51_10_9",
+          "en": "sofa",
+          "zh": "沙发",
+          "emoji": "🛋️"
+        },
+        {
+          "id": "w51_10_10",
+          "en": "shout",
+          "zh": "呼喊，大叫",
+          "emoji": "📢"
+        },
+        {
+          "id": "w51_10_11",
+          "en": "grass",
+          "zh": "草，草地",
+          "emoji": "🌿"
+        },
+        {
+          "id": "w51_10_12",
+          "en": "baby",
+          "zh": "婴儿",
+          "emoji": "👶"
+        },
+        {
+          "id": "w51_10_13",
+          "en": "dangerous",
+          "zh": "危险的",
+          "emoji": "⚠️"
+        }
+      ]
+    }
+  },
+  "5-2": {
+    "label": "五年级·下",
+    "units": {
+      "1": [
+        {
+          "id": "w52_1_1",
+          "en": "still",
+          "zh": "还，仍然",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w52_1_2",
+          "en": "programme",
+          "zh": "节目（电视或广播）",
+          "emoji": "📺"
+        },
+        {
+          "id": "w52_1_3",
+          "en": "lady",
+          "zh": "女士，夫人",
+          "emoji": "👩"
+        },
+        {
+          "id": "w52_1_4",
+          "en": "life",
+          "zh": "生活",
+          "emoji": "💖"
+        },
+        {
+          "id": "w52_1_5",
+          "en": "different",
+          "zh": "不同的",
+          "emoji": "🔀"
+        },
+        {
+          "id": "w52_1_6",
+          "en": "ago",
+          "zh": "以前",
+          "emoji": "⏳"
+        },
+        {
+          "id": "w52_1_7",
+          "en": "interviewer",
+          "zh": "采访者",
+          "emoji": "🎤"
+        },
+        {
+          "id": "w52_1_8",
+          "en": "enough",
+          "zh": "足够的",
+          "emoji": "✅"
+        },
+        {
+          "id": "w52_1_9",
+          "en": "television",
+          "zh": "电视机",
+          "emoji": "📺"
+        },
+        {
+          "id": "w52_1_10",
+          "en": "grandchildren",
+          "zh": "（外）孙子（女）",
+          "emoji": "👶"
+        },
+        {
+          "id": "w52_1_11",
+          "en": "change",
+          "zh": "改变，变化",
+          "emoji": "🔄"
+        },
+        {
+          "id": "w52_1_12",
+          "en": "night",
+          "zh": "夜晚，夜间",
+          "emoji": "🌙"
+        },
+        {
+          "id": "w52_1_13",
+          "en": "work",
+          "zh": "工作；劳动",
+          "emoji": "💼"
+        },
+        {
+          "id": "w52_1_14",
+          "en": "field",
+          "zh": "田地",
+          "emoji": "🌾"
+        },
+        {
+          "id": "w52_1_15",
+          "en": "fire",
+          "zh": "火，炉火",
+          "emoji": "🔥"
+        },
+        {
+          "id": "w52_1_16",
+          "en": "or",
+          "zh": "也不，也没（用于否定句）",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w52_1_17",
+          "en": "radio",
+          "zh": "收音机",
+          "emoji": "📻"
+        },
+        {
+          "id": "w52_1_18",
+          "en": "telephone",
+          "zh": "电话",
+          "emoji": "☎️"
+        },
+        {
+          "id": "w52_1_19",
+          "en": "couldn't",
+          "zh": "不能",
+          "emoji": "🚫"
+        },
+        {
+          "id": "w52_1_20",
+          "en": "write",
+          "zh": "写",
+          "emoji": "✏️"
+        },
+        {
+          "id": "w52_1_21",
+          "en": "hope",
+          "zh": "希望",
+          "emoji": "🙏"
+        }
+      ],
+      "2": [
+        {
+          "id": "w52_2_1",
+          "en": "learnt",
+          "zh": "学习（learn过去式）",
+          "emoji": "📚"
+        },
+        {
+          "id": "w52_2_2",
+          "en": "taught",
+          "zh": "教，讲授（teach过去式）",
+          "emoji": "👩‍🏫"
+        },
+        {
+          "id": "w52_2_3",
+          "en": "language",
+          "zh": "语言",
+          "emoji": "🗣️"
+        },
+        {
+          "id": "w52_2_4",
+          "en": "wrote",
+          "zh": "写（write过去式）",
+          "emoji": "✏️"
+        },
+        {
+          "id": "w52_2_5",
+          "en": "dancer",
+          "zh": "舞蹈演员",
+          "emoji": "💃"
+        },
+        {
+          "id": "w52_2_6",
+          "en": "foreign",
+          "zh": "外国的",
+          "emoji": "🌍"
+        },
+        {
+          "id": "w52_2_7",
+          "en": "studied",
+          "zh": "学习（study过去式）",
+          "emoji": "📚"
+        },
+        {
+          "id": "w52_2_8",
+          "en": "hard",
+          "zh": "努力地",
+          "emoji": "💪"
+        }
+      ],
+      "3": [
+        {
+          "id": "w52_3_1",
+          "en": "hamburger",
+          "zh": "汉堡包",
+          "emoji": "🍔"
+        },
+        {
+          "id": "w52_3_2",
+          "en": "English",
+          "zh": "英国（式）的",
+          "emoji": "🇬🇧"
+        },
+        {
+          "id": "w52_3_3",
+          "en": "breakfast",
+          "zh": "早餐，早饭",
+          "emoji": "🍳"
+        },
+        {
+          "id": "w52_3_4",
+          "en": "lunch",
+          "zh": "午餐，午饭",
+          "emoji": "🍱"
+        },
+        {
+          "id": "w52_3_5",
+          "en": "sandwich",
+          "zh": "三明治",
+          "emoji": "🥪"
+        },
+        {
+          "id": "w52_3_6",
+          "en": "fish and chips",
+          "zh": "炸鱼加炸薯条",
+          "emoji": "🍟"
+        },
+        {
+          "id": "w52_3_7",
+          "en": "traditional",
+          "zh": "传统的",
+          "emoji": "🏛️"
+        },
+        {
+          "id": "w52_3_8",
+          "en": "dish",
+          "zh": "食品；菜肴",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w52_3_9",
+          "en": "very much",
+          "zh": "很，非常",
+          "emoji": "❤️"
+        },
+        {
+          "id": "w52_3_10",
+          "en": "gave",
+          "zh": "给（give过去式）",
+          "emoji": "🎁"
+        },
+        {
+          "id": "w52_3_11",
+          "en": "tonight",
+          "zh": "今夜，今晚",
+          "emoji": "🌙"
+        }
+      ],
+      "4": [
+        {
+          "id": "w52_4_1",
+          "en": "library",
+          "zh": "图书馆",
+          "emoji": "📚"
+        },
+        {
+          "id": "w52_4_2",
+          "en": "student",
+          "zh": "学生",
+          "emoji": "🎒"
+        },
+        {
+          "id": "w52_4_3",
+          "en": "sent",
+          "zh": "发送，寄（send过去式）",
+          "emoji": "📧"
+        },
+        {
+          "id": "w52_4_4",
+          "en": "CD",
+          "zh": "激光唱片，光盘",
+          "emoji": "💿"
+        },
+        {
+          "id": "w52_4_5",
+          "en": "idea",
+          "zh": "主意，想法",
+          "emoji": "💡"
+        },
+        {
+          "id": "w52_4_6",
+          "en": "put",
+          "zh": "放，安放",
+          "emoji": "📥"
+        },
+        {
+          "id": "w52_4_7",
+          "en": "shelf",
+          "zh": "架子",
+          "emoji": "🗄️"
+        },
+        {
+          "id": "w52_4_8",
+          "en": "heavy",
+          "zh": "重的，沉的",
+          "emoji": "🪨"
+        },
+        {
+          "id": "w52_4_9",
+          "en": "dictionary",
+          "zh": "词典；字典",
+          "emoji": "📘"
+        },
+        {
+          "id": "w52_4_10",
+          "en": "card",
+          "zh": "卡片",
+          "emoji": "💳"
+        },
+        {
+          "id": "w52_4_11",
+          "en": "library card",
+          "zh": "图书卡，借书证",
+          "emoji": "💳"
+        },
+        {
+          "id": "w52_4_12",
+          "en": "ask",
+          "zh": "邀请",
+          "emoji": "💌"
+        },
+        {
+          "id": "w52_4_13",
+          "en": "wrong",
+          "zh": "错误的",
+          "emoji": "❌"
+        },
+        {
+          "id": "w52_4_14",
+          "en": "dear",
+          "zh": "哎呀",
+          "emoji": "😮"
+        },
+        {
+          "id": "w52_4_15",
+          "en": "information",
+          "zh": "信息",
+          "emoji": "ℹ️"
+        },
+        {
+          "id": "w52_4_16",
+          "en": "e-book",
+          "zh": "电子书",
+          "emoji": "📱"
+        },
+        {
+          "id": "w52_4_17",
+          "en": "project",
+          "zh": "项目",
+          "emoji": "📁"
+        },
+        {
+          "id": "w52_4_18",
+          "en": "guide",
+          "zh": "介绍，指南，手册",
+          "emoji": "🧭"
+        },
+        {
+          "id": "w52_4_19",
+          "en": "film",
+          "zh": "电影",
+          "emoji": "🎬"
+        },
+        {
+          "id": "w52_4_20",
+          "en": "as well",
+          "zh": "又，还，也",
+          "emoji": "➕"
+        },
+        {
+          "id": "w52_4_21",
+          "en": "way",
+          "zh": "方法，方式",
+          "emoji": "🛤️"
+        },
+        {
+          "id": "w52_4_22",
+          "en": "on",
+          "zh": "关于",
+          "emoji": "📖"
+        },
+        {
+          "id": "w52_4_23",
+          "en": "topic",
+          "zh": "话题",
+          "emoji": "💬"
+        }
+      ],
+      "5": [
+        {
+          "id": "w52_5_1",
+          "en": "light",
+          "zh": "轻的",
+          "emoji": "🪶"
+        },
+        {
+          "id": "w52_5_2",
+          "en": "hard",
+          "zh": "困难的，费力的",
+          "emoji": "🧩"
+        },
+        {
+          "id": "w52_5_3",
+          "en": "broken",
+          "zh": "坏的，破的",
+          "emoji": "💔"
+        },
+        {
+          "id": "w52_5_4",
+          "en": "department store",
+          "zh": "百货商店",
+          "emoji": "🏬"
+        },
+        {
+          "id": "w52_5_5",
+          "en": "pocket",
+          "zh": "口袋，兜",
+          "emoji": "👖"
+        },
+        {
+          "id": "w52_5_6",
+          "en": "umbrella",
+          "zh": "雨伞",
+          "emoji": "☂️"
+        },
+        {
+          "id": "w52_5_7",
+          "en": "sales assistant",
+          "zh": "售货员，营业员",
+          "emoji": "🛍️"
+        },
+        {
+          "id": "w52_5_8",
+          "en": "wheel",
+          "zh": "轮子",
+          "emoji": "⚙️"
+        },
+        {
+          "id": "w52_5_9",
+          "en": "easy",
+          "zh": "容易的，不费力的",
+          "emoji": "😊"
+        },
+        {
+          "id": "w52_5_10",
+          "en": "take",
+          "zh": "选择要；选择购买",
+          "emoji": "🛒"
+        },
+        {
+          "id": "w52_5_11",
+          "en": "too",
+          "zh": "太，过于",
+          "emoji": "⚠️"
+        },
+        {
+          "id": "w52_5_12",
+          "en": "try",
+          "zh": "试，尝试",
+          "emoji": "🤞"
+        },
+        {
+          "id": "w52_5_13",
+          "en": "lovely",
+          "zh": "美丽的，可爱的；令人愉快的",
+          "emoji": "🌸"
+        }
+      ],
+      "6": [
+        {
+          "id": "w52_6_1",
+          "en": "moon",
+          "zh": "月亮，月球",
+          "emoji": "🌙"
+        },
+        {
+          "id": "w52_6_2",
+          "en": "get",
+          "zh": "到达",
+          "emoji": "🏁"
+        },
+        {
+          "id": "w52_6_3",
+          "en": "west",
+          "zh": "西，西部，西方；向西方",
+          "emoji": "🌇"
+        },
+        {
+          "id": "w52_6_4",
+          "en": "parent",
+          "zh": "母亲；父亲；家长",
+          "emoji": "👪"
+        },
+        {
+          "id": "w52_6_5",
+          "en": "stay",
+          "zh": "停留",
+          "emoji": "🏠"
+        },
+        {
+          "id": "w52_6_6",
+          "en": "July",
+          "zh": "七月",
+          "emoji": "🗓️"
+        },
+        {
+          "id": "w52_6_7",
+          "en": "south",
+          "zh": "南，南部，南方；向南方",
+          "emoji": "🌞"
+        },
+        {
+          "id": "w52_6_8",
+          "en": "remember",
+          "zh": "记得",
+          "emoji": "🧠"
+        },
+        {
+          "id": "w52_6_9",
+          "en": "June",
+          "zh": "六月",
+          "emoji": "🗓️"
+        },
+        {
+          "id": "w52_6_10",
+          "en": "east",
+          "zh": "东，东部，东方；向东方",
+          "emoji": "🌅"
+        },
+        {
+          "id": "w52_6_11",
+          "en": "best",
+          "zh": "最好的",
+          "emoji": "🏆"
+        },
+        {
+          "id": "w52_6_12",
+          "en": "north",
+          "zh": "北，北部，北方；向北方",
+          "emoji": "❄️"
+        },
+        {
+          "id": "w52_6_13",
+          "en": "rest",
+          "zh": "休息",
+          "emoji": "😴"
+        },
+        {
+          "id": "w52_6_14",
+          "en": "have a rest",
+          "zh": "休息一下",
+          "emoji": "💤"
+        },
+        {
+          "id": "w52_6_15",
+          "en": "rode",
+          "zh": "骑（ride过去式）",
+          "emoji": "🚴"
+        }
+      ],
+      "7": [
+        {
+          "id": "w52_7_1",
+          "en": "evening",
+          "zh": "傍晚，晚上",
+          "emoji": "🌆"
+        },
+        {
+          "id": "w52_7_2",
+          "en": "late",
+          "zh": "近日暮的；近深夜的；时间不早的",
+          "emoji": "🕛"
+        },
+        {
+          "id": "w52_7_3",
+          "en": "worker",
+          "zh": "工人",
+          "emoji": "👷"
+        },
+        {
+          "id": "w52_7_4",
+          "en": "factory",
+          "zh": "制造厂；工厂",
+          "emoji": "🏭"
+        },
+        {
+          "id": "w52_7_5",
+          "en": "early",
+          "zh": "早的",
+          "emoji": "🌅"
+        },
+        {
+          "id": "w52_7_6",
+          "en": "taxi",
+          "zh": "出租车，计程车",
+          "emoji": "🚕"
+        },
+        {
+          "id": "w52_7_7",
+          "en": "quarter",
+          "zh": "一刻钟",
+          "emoji": "🕒"
+        },
+        {
+          "id": "w52_7_8",
+          "en": "to",
+          "zh": "（距整点）差……",
+          "emoji": "🕐"
+        },
+        {
+          "id": "w52_7_9",
+          "en": "worry",
+          "zh": "焦虑，担心",
+          "emoji": "😟"
+        }
+      ],
+      "8": [
+        {
+          "id": "w52_8_1",
+          "en": "paper",
+          "zh": "纸",
+          "emoji": "📄"
+        },
+        {
+          "id": "w52_8_2",
+          "en": "Chinese",
+          "zh": "中国人的",
+          "emoji": "🇨🇳"
+        },
+        {
+          "id": "w52_8_3",
+          "en": "so",
+          "zh": "如此，这样",
+          "emoji": "💭"
+        },
+        {
+          "id": "w52_8_4",
+          "en": "word",
+          "zh": "词，字",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w52_8_5",
+          "en": "drew",
+          "zh": "画（draw过去式）",
+          "emoji": "🎨"
+        },
+        {
+          "id": "w52_8_6",
+          "en": "cut",
+          "zh": "剪，切，割（cut过去式）",
+          "emoji": "✂️"
+        },
+        {
+          "id": "w52_8_7",
+          "en": "piece",
+          "zh": "张，片，块",
+          "emoji": "🍪"
+        },
+        {
+          "id": "w52_8_8",
+          "en": "paint",
+          "zh": "绘画，着色",
+          "emoji": "🖌️"
+        },
+        {
+          "id": "w52_8_9",
+          "en": "put",
+          "zh": "放，安放（put过去式）",
+          "emoji": "📥"
+        },
+        {
+          "id": "w52_8_10",
+          "en": "stick",
+          "zh": "小木棍，小木条",
+          "emoji": "🪵"
+        },
+        {
+          "id": "w52_8_11",
+          "en": "tied",
+          "zh": "扎上，系上（tie过去式）",
+          "emoji": "🎀"
+        },
+        {
+          "id": "w52_8_12",
+          "en": "string",
+          "zh": "线，绳子",
+          "emoji": "🧵"
+        }
+      ],
+      "9": [
+        {
+          "id": "w52_9_1",
+          "en": "laugh",
+          "zh": "笑",
+          "emoji": "😂"
+        },
+        {
+          "id": "w52_9_2",
+          "en": "wore",
+          "zh": "穿（wear过去式）",
+          "emoji": "👕"
+        },
+        {
+          "id": "w52_9_3",
+          "en": "letter",
+          "zh": "信，书信",
+          "emoji": "✉️"
+        },
+        {
+          "id": "w52_9_4",
+          "en": "theatre",
+          "zh": "剧院",
+          "emoji": "🎭"
+        },
+        {
+          "id": "w52_9_5",
+          "en": "women",
+          "zh": "女性，妇女（woman复数）",
+          "emoji": "👩"
+        },
+        {
+          "id": "w52_9_6",
+          "en": "actor",
+          "zh": "演员",
+          "emoji": "🎬"
+        },
+        {
+          "id": "w52_9_7",
+          "en": "told",
+          "zh": "口述，讲（故事等）（tell过去式）",
+          "emoji": "📖"
+        },
+        {
+          "id": "w52_9_8",
+          "en": "joke",
+          "zh": "笑话",
+          "emoji": "🤡"
+        },
+        {
+          "id": "w52_9_9",
+          "en": "after",
+          "zh": "在……以后",
+          "emoji": "⏭️"
+        },
+        {
+          "id": "w52_9_10",
+          "en": "show",
+          "zh": "演出，表演",
+          "emoji": "🎪"
+        },
+        {
+          "id": "w52_9_11",
+          "en": "restaurant",
+          "zh": "饭店，餐馆",
+          "emoji": "🍴"
+        },
+        {
+          "id": "w52_9_12",
+          "en": "read",
+          "zh": "读（read过去式）",
+          "emoji": "📖"
+        },
+        {
+          "id": "w52_9_13",
+          "en": "at all",
+          "zh": "一点都",
+          "emoji": "🤷"
+        },
+        {
+          "id": "w52_9_14",
+          "en": "in",
+          "zh": "在（将来一段时间）之后",
+          "emoji": "📅"
+        },
+        {
+          "id": "w52_9_15",
+          "en": "another",
+          "zh": "另一个",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w52_9_16",
+          "en": "history",
+          "zh": "历史",
+          "emoji": "📜"
+        },
+        {
+          "id": "w52_9_17",
+          "en": "ask",
+          "zh": "问，询问",
+          "emoji": "🗣️"
+        },
+        {
+          "id": "w52_9_18",
+          "en": "question",
+          "zh": "问题",
+          "emoji": "❓"
+        },
+        {
+          "id": "w52_9_19",
+          "en": "forget",
+          "zh": "忘，忘记",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w52_9_20",
+          "en": "bring",
+          "zh": "带来，拿来",
+          "emoji": "🤲"
+        },
+        {
+          "id": "w52_9_21",
+          "en": "soon",
+          "zh": "不久，很快",
+          "emoji": "⏳"
+        }
+      ],
+      "10": [
+        {
+          "id": "w52_10_1",
+          "en": "when",
+          "zh": "在什么时候",
+          "emoji": "❓"
+        },
+        {
+          "id": "w52_10_2",
+          "en": "end",
+          "zh": "结束，终止",
+          "emoji": "🔚"
+        },
+        {
+          "id": "w52_10_3",
+          "en": "nervous",
+          "zh": "紧张的，情绪不安的",
+          "emoji": "😰"
+        },
+        {
+          "id": "w52_10_4",
+          "en": "all right",
+          "zh": "没事，没问题",
+          "emoji": "👍"
+        },
+        {
+          "id": "w52_10_5",
+          "en": "airport",
+          "zh": "机场",
+          "emoji": "✈️"
+        },
+        {
+          "id": "w52_10_6",
+          "en": "ticket",
+          "zh": "票",
+          "emoji": "🎫"
+        },
+        {
+          "id": "w52_10_7",
+          "en": "passport",
+          "zh": "护照",
+          "emoji": "📔"
+        },
+        {
+          "id": "w52_10_8",
+          "en": "safe",
+          "zh": "安全的，平安的",
+          "emoji": "🛡️"
+        },
+        {
+          "id": "w52_10_9",
+          "en": "pet",
+          "zh": "宠物",
+          "emoji": "🐾"
+        },
+        {
+          "id": "w52_10_10",
+          "en": "speak",
+          "zh": "说，讲",
+          "emoji": "🗣️"
+        },
+        {
+          "id": "w52_10_11",
+          "en": "building",
+          "zh": "建筑物",
+          "emoji": "🏢"
+        },
+        {
+          "id": "w52_10_12",
+          "en": "American",
+          "zh": "美国的；美国人的；美国人",
+          "emoji": "🇺🇸"
+        },
+        {
+          "id": "w52_10_13",
+          "en": "find out",
+          "zh": "发现，弄清",
+          "emoji": "🔍"
+        },
+        {
+          "id": "w52_10_14",
+          "en": "more",
+          "zh": "更多的（量），较多的（量）",
+          "emoji": "➕"
+        }
+      ]
+    }
+  },
+  "6-1": {
+    "label": "六年级·上",
+    "units": {
+      "1": [
+        {
+          "id": "w61_1_1",
+          "en": "more than",
+          "zh": "超过",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w61_1_2",
+          "en": "thousand",
+          "zh": "一千",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w61_1_3",
+          "en": "kilometre",
+          "zh": "千米，公里",
+          "emoji": "📏"
+        },
+        {
+          "id": "w61_1_4",
+          "en": "something",
+          "zh": "某事物，某种东西",
+          "emoji": "📦"
+        },
+        {
+          "id": "w61_1_5",
+          "en": "million",
+          "zh": "百万",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w61_1_6",
+          "en": "map",
+          "zh": "地图",
+          "emoji": "🗺️"
+        },
+        {
+          "id": "w61_1_7",
+          "en": "right",
+          "zh": "正确的",
+          "emoji": "✅"
+        },
+        {
+          "id": "w61_1_8",
+          "en": "country",
+          "zh": "国家",
+          "emoji": "🏳️"
+        }
+      ],
+      "2": [
+        {
+          "id": "w61_2_1",
+          "en": "dancing",
+          "zh": "跳舞，舞蹈",
+          "emoji": "💃"
+        },
+        {
+          "id": "w61_2_2",
+          "en": "Chinatown",
+          "zh": "唐人街，中国城",
+          "emoji": "🐉"
+        },
+        {
+          "id": "w61_2_3",
+          "en": "sometimes",
+          "zh": "有时",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w61_2_4",
+          "en": "shop",
+          "zh": "商店",
+          "emoji": "🏪"
+        },
+        {
+          "id": "w61_2_5",
+          "en": "then",
+          "zh": "既然是这样，那么",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w61_2_6",
+          "en": "ah",
+          "zh": "啊",
+          "emoji": "💬"
+        },
+        {
+          "id": "w61_2_7",
+          "en": "strong",
+          "zh": "坚固的",
+          "emoji": "💪"
+        }
+      ],
+      "3": [
+        {
+          "id": "w61_3_1",
+          "en": "collect",
+          "zh": "收集",
+          "emoji": "📥"
+        },
+        {
+          "id": "w61_3_2",
+          "en": "stamp",
+          "zh": "邮票",
+          "emoji": "✉️"
+        },
+        {
+          "id": "w61_3_3",
+          "en": "hobby",
+          "zh": "业余爱好",
+          "emoji": "🎨"
+        },
+        {
+          "id": "w61_3_4",
+          "en": "doll",
+          "zh": "玩具娃娃",
+          "emoji": "🪆"
+        },
+        {
+          "id": "w61_3_5",
+          "en": "bicycle",
+          "zh": "自行车",
+          "emoji": "🚲"
+        }
+      ],
+      "4": [
+        {
+          "id": "w61_4_1",
+          "en": "Thanksgiving",
+          "zh": "感恩节",
+          "emoji": "🦃"
+        },
+        {
+          "id": "w61_4_2",
+          "en": "Thanksgiving Day",
+          "zh": "感恩节",
+          "emoji": "🦃"
+        },
+        {
+          "id": "w61_4_3",
+          "en": "flag",
+          "zh": "旗；国旗",
+          "emoji": "🚩"
+        },
+        {
+          "id": "w61_4_4",
+          "en": "Flag Day",
+          "zh": "(美国)国旗制定纪念日",
+          "emoji": "🚩"
+        },
+        {
+          "id": "w61_4_5",
+          "en": "fly",
+          "zh": "（使）（旗帜）飘扬",
+          "emoji": "🚩"
+        },
+        {
+          "id": "w61_4_6",
+          "en": "special",
+          "zh": "特殊的，特别的",
+          "emoji": "⭐"
+        },
+        {
+          "id": "w61_4_7",
+          "en": "meal",
+          "zh": "餐",
+          "emoji": "🍽️"
+        },
+        {
+          "id": "w61_4_8",
+          "en": "sound",
+          "zh": "听起来",
+          "emoji": "🔊"
+        },
+        {
+          "id": "w61_4_9",
+          "en": "football",
+          "zh": "（美式）橄榄球",
+          "emoji": "🏈"
+        },
+        {
+          "id": "w61_4_10",
+          "en": "moon cake",
+          "zh": "月饼",
+          "emoji": "🥮"
+        },
+        {
+          "id": "w61_4_11",
+          "en": "the Mid-Autumn Festival",
+          "zh": "中秋节",
+          "emoji": "🌕"
+        },
+        {
+          "id": "w61_4_12",
+          "en": "the Dragon Boat Festival",
+          "zh": "端午节",
+          "emoji": "🚣"
+        },
+        {
+          "id": "w61_4_13",
+          "en": "race",
+          "zh": "比赛，竞赛",
+          "emoji": "🏁"
+        },
+        {
+          "id": "w61_4_14",
+          "en": "lantern",
+          "zh": "灯笼",
+          "emoji": "🏮"
+        },
+        {
+          "id": "w61_4_15",
+          "en": "the Lantern Festival",
+          "zh": "元宵节",
+          "emoji": "🏮"
+        },
+        {
+          "id": "w61_4_16",
+          "en": "hang",
+          "zh": "悬挂，吊",
+          "emoji": "🪝"
+        }
+      ],
+      "5": [
+        {
+          "id": "w61_5_1",
+          "en": "pen friend",
+          "zh": "笔友",
+          "emoji": "✉️"
+        },
+        {
+          "id": "w61_5_2",
+          "en": "Pleased to meet you!",
+          "zh": "很高兴见到你！",
+          "emoji": "👋"
+        },
+        {
+          "id": "w61_5_3",
+          "en": "address",
+          "zh": "地址",
+          "emoji": "📍"
+        },
+        {
+          "id": "w61_5_4",
+          "en": "French",
+          "zh": "法语",
+          "emoji": "🇫🇷"
+        },
+        {
+          "id": "w61_5_5",
+          "en": "age",
+          "zh": "年龄",
+          "emoji": "🎂"
+        },
+        {
+          "id": "w61_5_6",
+          "en": "story",
+          "zh": "故事",
+          "emoji": "📖"
+        },
+        {
+          "id": "w61_5_7",
+          "en": "candy",
+          "zh": "糖果",
+          "emoji": "🍬"
+        }
+      ],
+      "6": [
+        {
+          "id": "w61_6_1",
+          "en": "world",
+          "zh": "世界",
+          "emoji": "🌍"
+        },
+        {
+          "id": "w61_6_2",
+          "en": "often",
+          "zh": "经常",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w61_6_3",
+          "en": "difficult",
+          "zh": "困难的",
+          "emoji": "🧩"
+        },
+        {
+          "id": "w61_6_4",
+          "en": "knife",
+          "zh": "餐刀；刀子",
+          "emoji": "🔪"
+        },
+        {
+          "id": "w61_6_5",
+          "en": "fork",
+          "zh": "叉；餐叉",
+          "emoji": "🍴"
+        },
+        {
+          "id": "w61_6_6",
+          "en": "chopsticks",
+          "zh": "（常复）筷子",
+          "emoji": "🥢"
+        },
+        {
+          "id": "w61_6_7",
+          "en": "Japanese",
+          "zh": "日本的",
+          "emoji": "🇯🇵"
+        }
+      ],
+      "7": [
+        {
+          "id": "w61_7_1",
+          "en": "believe",
+          "zh": "相信",
+          "emoji": "🙏"
+        },
+        {
+          "id": "w61_7_2",
+          "en": "snake",
+          "zh": "蛇",
+          "emoji": "🐍"
+        },
+        {
+          "id": "w61_7_3",
+          "en": "DVD",
+          "zh": "数字化视频光盘，DVD光盘",
+          "emoji": "💿"
+        },
+        {
+          "id": "w61_7_4",
+          "en": "together",
+          "zh": "一起，共同",
+          "emoji": "👫"
+        },
+        {
+          "id": "w61_7_5",
+          "en": "lucky",
+          "zh": "幸运的",
+          "emoji": "🍀"
+        },
+        {
+          "id": "w61_7_6",
+          "en": "bamboo",
+          "zh": "竹子",
+          "emoji": "🎋"
+        },
+        {
+          "id": "w61_7_7",
+          "en": "its",
+          "zh": "它的",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w61_7_8",
+          "en": "body",
+          "zh": "身体",
+          "emoji": "🧍"
+        },
+        {
+          "id": "w61_7_9",
+          "en": "come out of",
+          "zh": "从……中出来",
+          "emoji": "🚪"
+        },
+        {
+          "id": "w61_7_10",
+          "en": "flute",
+          "zh": "笛子",
+          "emoji": "🎶"
+        },
+        {
+          "id": "w61_7_11",
+          "en": "get",
+          "zh": "变得，变成",
+          "emoji": "🔄"
+        },
+        {
+          "id": "w61_7_12",
+          "en": "frightened",
+          "zh": "恐惧的，害怕的",
+          "emoji": "😨"
+        }
+      ],
+      "8": [
+        {
+          "id": "w61_8_1",
+          "en": "long ago",
+          "zh": "很久以前",
+          "emoji": "⏳"
+        },
+        {
+          "id": "w61_8_2",
+          "en": "I'd love to",
+          "zh": "我很乐意",
+          "emoji": "❤️"
+        },
+        {
+          "id": "w61_8_3",
+          "en": "not really",
+          "zh": "不全是，事实上没有",
+          "emoji": "🙅"
+        },
+        {
+          "id": "w61_8_4",
+          "en": "stop",
+          "zh": "（使）停止",
+          "emoji": "🛑"
+        },
+        {
+          "id": "w61_8_5",
+          "en": "clean",
+          "zh": "打扫，（使）清洁",
+          "emoji": "🧹"
+        },
+        {
+          "id": "w61_8_6",
+          "en": "camera",
+          "zh": "照相机",
+          "emoji": "📷"
+        },
+        {
+          "id": "w61_8_7",
+          "en": "show",
+          "zh": "把……给（某人）看",
+          "emoji": "👀"
+        },
+        {
+          "id": "w61_8_8",
+          "en": "never",
+          "zh": "从不",
+          "emoji": "🚫"
+        }
+      ],
+      "9": [
+        {
+          "id": "w61_9_1",
+          "en": "around",
+          "zh": "在四周，到处",
+          "emoji": "🔄"
+        },
+        {
+          "id": "w61_9_2",
+          "en": "all around",
+          "zh": "到处，遍及",
+          "emoji": "🌐"
+        },
+        {
+          "id": "w61_9_3",
+          "en": "member state",
+          "zh": "成员国",
+          "emoji": "🏛️"
+        },
+        {
+          "id": "w61_9_4",
+          "en": "inside",
+          "zh": "向室内，向里面",
+          "emoji": "🏠"
+        },
+        {
+          "id": "w61_9_5",
+          "en": "should",
+          "zh": "应该",
+          "emoji": "✔️"
+        }
+      ],
+      "10": [
+        {
+          "id": "w61_10_1",
+          "en": "line",
+          "zh": "（等候的）长队，队列",
+          "emoji": "🧍"
+        },
+        {
+          "id": "w61_10_2",
+          "en": "stand in line",
+          "zh": "排队",
+          "emoji": "🧍"
+        },
+        {
+          "id": "w61_10_3",
+          "en": "close",
+          "zh": "关门，关闭",
+          "emoji": "🔒"
+        },
+        {
+          "id": "w61_10_4",
+          "en": "librarian",
+          "zh": "图书馆管理员",
+          "emoji": "📚"
+        },
+        {
+          "id": "w61_10_5",
+          "en": "rule",
+          "zh": "规定，规章",
+          "emoji": "📜"
+        },
+        {
+          "id": "w61_10_6",
+          "en": "quiet",
+          "zh": "安静的",
+          "emoji": "🤫"
+        },
+        {
+          "id": "w61_10_7",
+          "en": "problem",
+          "zh": "麻烦，困难，问题",
+          "emoji": "❓"
+        },
+        {
+          "id": "w61_10_8",
+          "en": "No problem",
+          "zh": "没问题",
+          "emoji": "👍"
+        },
+        {
+          "id": "w61_10_9",
+          "en": "cross",
+          "zh": "穿过（马路等）；渡过（河）",
+          "emoji": "🚸"
+        }
+      ]
+    }
+  },
+  "6-2": {
+    "label": "六年级·下",
+    "units": {
+      "1": [
+        {
+          "id": "w62_1_1",
+          "en": "look",
+          "zh": "看上去",
+          "emoji": "👀"
+        },
+        {
+          "id": "w62_1_2",
+          "en": "cashier",
+          "zh": "收银员",
+          "emoji": "💰"
+        },
+        {
+          "id": "w62_1_3",
+          "en": "cola",
+          "zh": "可乐",
+          "emoji": "🥤"
+        },
+        {
+          "id": "w62_1_4",
+          "en": "dollar",
+          "zh": "美元",
+          "emoji": "💵"
+        },
+        {
+          "id": "w62_1_5",
+          "en": "cent",
+          "zh": "美分",
+          "emoji": "🪙"
+        },
+        {
+          "id": "w62_1_6",
+          "en": "enjoy",
+          "zh": "享用，享受",
+          "emoji": "😊"
+        },
+        {
+          "id": "w62_1_7",
+          "en": "careful",
+          "zh": "小心的",
+          "emoji": "⚠️"
+        },
+        {
+          "id": "w62_1_8",
+          "en": "Be careful",
+          "zh": "当心！",
+          "emoji": "⚠️"
+        }
+      ],
+      "2": [
+        {
+          "id": "w62_2_1",
+          "en": "later",
+          "zh": "后来，以后",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w62_2_2",
+          "en": "to go",
+          "zh": "剩余",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w62_2_3",
+          "en": "duck",
+          "zh": "鸭子",
+          "emoji": "🦆"
+        },
+        {
+          "id": "w62_2_4",
+          "en": "pond",
+          "zh": "水池，池塘",
+          "emoji": "💧"
+        },
+        {
+          "id": "w62_2_5",
+          "en": "cloud",
+          "zh": "云",
+          "emoji": "☁️"
+        },
+        {
+          "id": "w62_2_6",
+          "en": "dry",
+          "zh": "干的",
+          "emoji": "☀️"
+        },
+        {
+          "id": "w62_2_7",
+          "en": "like",
+          "zh": "像……一样",
+          "emoji": "💭"
+        },
+        {
+          "id": "w62_2_8",
+          "en": "look like",
+          "zh": "看来好像",
+          "emoji": "👀"
+        },
+        {
+          "id": "w62_2_9",
+          "en": "stay",
+          "zh": "保持，维持",
+          "emoji": "🧍"
+        }
+      ],
+      "3": [
+        {
+          "id": "w62_3_1",
+          "en": "shine",
+          "zh": "（太阳）发光，照耀",
+          "emoji": "☀️"
+        },
+        {
+          "id": "w62_3_2",
+          "en": "cry",
+          "zh": "哭",
+          "emoji": "😢"
+        },
+        {
+          "id": "w62_3_3",
+          "en": "everyone",
+          "zh": "人人，每人，大家",
+          "emoji": "👥"
+        },
+        {
+          "id": "w62_3_4",
+          "en": "fly away",
+          "zh": "飞走",
+          "emoji": "🕊️"
+        },
+        {
+          "id": "w62_3_5",
+          "en": "just",
+          "zh": "就，且请",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w62_3_6",
+          "en": "cow",
+          "zh": "奶牛",
+          "emoji": "🐄"
+        },
+        {
+          "id": "w62_3_7",
+          "en": "blow",
+          "zh": "吹，刮",
+          "emoji": "💨"
+        },
+        {
+          "id": "w62_3_8",
+          "en": "rabbit",
+          "zh": "兔子",
+          "emoji": "🐰"
+        }
+      ],
+      "4": [
+        {
+          "id": "w62_4_1",
+          "en": "balloon",
+          "zh": "气球",
+          "emoji": "🎈"
+        },
+        {
+          "id": "w62_4_2",
+          "en": "stairs",
+          "zh": "（常复）楼梯",
+          "emoji": "🪜"
+        },
+        {
+          "id": "w62_4_3",
+          "en": "mess",
+          "zh": "肮脏；凌乱",
+          "emoji": "🗑️"
+        }
+      ],
+      "5": [
+        {
+          "id": "w62_5_1",
+          "en": "play",
+          "zh": "演奏，弹奏（音乐）",
+          "emoji": "🎵"
+        },
+        {
+          "id": "w62_5_2",
+          "en": "third",
+          "zh": "第三（个）",
+          "emoji": "3️⃣"
+        },
+        {
+          "id": "w62_5_3",
+          "en": "time",
+          "zh": "次，回",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w62_5_4",
+          "en": "bark",
+          "zh": "（狗）吠，叫",
+          "emoji": "🐶"
+        },
+        {
+          "id": "w62_5_5",
+          "en": "loudly",
+          "zh": "大声地",
+          "emoji": "📢"
+        },
+        {
+          "id": "w62_5_6",
+          "en": "nothing",
+          "zh": "没有东西，没有事情",
+          "emoji": "🚫"
+        }
+      ],
+      "6": [
+        {
+          "id": "w62_6_1",
+          "en": "home",
+          "zh": "回家",
+          "emoji": "🏠"
+        },
+        {
+          "id": "w62_6_2",
+          "en": "got",
+          "zh": "（get的过去式）得到，收到",
+          "emoji": "🎁"
+        },
+        {
+          "id": "w62_6_3",
+          "en": "space",
+          "zh": "太空",
+          "emoji": "🌌"
+        },
+        {
+          "id": "w62_6_4",
+          "en": "interested",
+          "zh": "感兴趣的",
+          "emoji": "🤔"
+        },
+        {
+          "id": "w62_6_5",
+          "en": "spaceship",
+          "zh": "宇宙飞船",
+          "emoji": "🚀"
+        },
+        {
+          "id": "w62_6_6",
+          "en": "finish",
+          "zh": "结束，完成",
+          "emoji": "🏁"
+        },
+        {
+          "id": "w62_6_7",
+          "en": "decide",
+          "zh": "决定",
+          "emoji": "⚖️"
+        },
+        {
+          "id": "w62_6_8",
+          "en": "paper",
+          "zh": "纸做的，纸质的",
+          "emoji": "📄"
+        },
+        {
+          "id": "w62_6_9",
+          "en": "brought",
+          "zh": "（bring的过去式）拿来，带来",
+          "emoji": "📦"
+        },
+        {
+          "id": "w62_6_10",
+          "en": "bring back",
+          "zh": "带回",
+          "emoji": "🔙"
+        },
+        {
+          "id": "w62_6_11",
+          "en": "model",
+          "zh": "模型",
+          "emoji": "🧱"
+        },
+        {
+          "id": "w62_6_12",
+          "en": "taikonaut",
+          "zh": "（中国的）太空人，宇航员",
+          "emoji": "👨‍🚀"
+        },
+        {
+          "id": "w62_6_13",
+          "en": "first",
+          "zh": "最初（的），第一次（的）",
+          "emoji": "1️⃣"
+        },
+        {
+          "id": "w62_6_14",
+          "en": "national",
+          "zh": "国家的，民族的",
+          "emoji": "🏳️"
+        },
+        {
+          "id": "w62_6_15",
+          "en": "seed",
+          "zh": "种子",
+          "emoji": "🌱"
+        }
+      ],
+      "7": [
+        {
+          "id": "w62_7_1",
+          "en": "spent",
+          "zh": "（spend的过去式）度过",
+          "emoji": "⏳"
+        },
+        {
+          "id": "w62_7_2",
+          "en": "about",
+          "zh": "大约",
+          "emoji": "🔢"
+        },
+        {
+          "id": "w62_7_3",
+          "en": "flew",
+          "zh": "（fly的过去式）飞，飞行",
+          "emoji": "✈️"
+        },
+        {
+          "id": "w62_7_4",
+          "en": "October",
+          "zh": "十月",
+          "emoji": "🍂"
+        },
+        {
+          "id": "w62_7_5",
+          "en": "video",
+          "zh": "录像",
+          "emoji": "📹"
+        },
+        {
+          "id": "w62_7_6",
+          "en": "proud",
+          "zh": "感到自豪的，感到骄傲的",
+          "emoji": "🏆"
+        },
+        {
+          "id": "w62_7_7",
+          "en": "someday",
+          "zh": "有朝一日",
+          "emoji": "🔮"
+        },
+        {
+          "id": "w62_7_8",
+          "en": "born",
+          "zh": "出生，诞生",
+          "emoji": "👶"
+        },
+        {
+          "id": "w62_7_9",
+          "en": "as",
+          "zh": "作为",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w62_7_10",
+          "en": "became",
+          "zh": "（become的过去式）变成",
+          "emoji": "🔄"
+        },
+        {
+          "id": "w62_7_11",
+          "en": "letter",
+          "zh": "字母",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w62_7_12",
+          "en": "spell",
+          "zh": "拼写，拼出",
+          "emoji": "🔤"
+        },
+        {
+          "id": "w62_7_13",
+          "en": "herself",
+          "zh": "她自己",
+          "emoji": "👧"
+        },
+        {
+          "id": "w62_7_14",
+          "en": "all over",
+          "zh": "到处，遍及，处处",
+          "emoji": "🌍"
+        },
+        {
+          "id": "w62_7_15",
+          "en": "live",
+          "zh": "活着",
+          "emoji": "❤️"
+        },
+        {
+          "id": "w62_7_16",
+          "en": "role model",
+          "zh": "模范，榜样",
+          "emoji": "⭐"
+        }
+      ],
+      "8": [
+        {
+          "id": "w62_8_1",
+          "en": "cup",
+          "zh": "杯子",
+          "emoji": "☕"
+        },
+        {
+          "id": "w62_8_2",
+          "en": "planned",
+          "zh": "（plan的过去式）计划",
+          "emoji": "📝"
+        },
+        {
+          "id": "w62_8_3",
+          "en": "baseball",
+          "zh": "棒球",
+          "emoji": "⚾"
+        },
+        {
+          "id": "w62_8_4",
+          "en": "more",
+          "zh": "更强烈的",
+          "emoji": "➕"
+        },
+        {
+          "id": "w62_8_5",
+          "en": "smile",
+          "zh": "微笑",
+          "emoji": "😊"
+        },
+        {
+          "id": "w62_8_6",
+          "en": "mistake",
+          "zh": "错误",
+          "emoji": "❌"
+        },
+        {
+          "id": "w62_8_7",
+          "en": "make mistakes",
+          "zh": "犯错误",
+          "emoji": "❌"
+        },
+        {
+          "id": "w62_8_8",
+          "en": "with",
+          "zh": "与……有关",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w62_8_9",
+          "en": "said",
+          "zh": "（say的过去式）说",
+          "emoji": "💬"
+        },
+        {
+          "id": "w62_8_10",
+          "en": "raincoat",
+          "zh": "雨衣",
+          "emoji": "🧥"
+        }
+      ],
+      "9": [
+        {
+          "id": "w62_9_1",
+          "en": "wish",
+          "zh": "愿望，希望，祝，祝愿",
+          "emoji": "⭐"
+        },
+        {
+          "id": "w62_9_2",
+          "en": "best wishes",
+          "zh": "最美好的祝愿",
+          "emoji": "💌"
+        },
+        {
+          "id": "w62_9_3",
+          "en": "primary",
+          "zh": "小学的，初等的",
+          "emoji": "🏫"
+        },
+        {
+          "id": "w62_9_4",
+          "en": "message",
+          "zh": "留言；消息",
+          "emoji": "💬"
+        },
+        {
+          "id": "w62_9_5",
+          "en": "keep",
+          "zh": "留言；保存",
+          "emoji": "💾"
+        },
+        {
+          "id": "w62_9_6",
+          "en": "forever",
+          "zh": "永远",
+          "emoji": "♾️"
+        },
+        {
+          "id": "w62_9_7",
+          "en": "joy",
+          "zh": "乐事，乐趣",
+          "emoji": "🎉"
+        },
+        {
+          "id": "w62_9_8",
+          "en": "future",
+          "zh": "未来",
+          "emoji": "🔮"
+        },
+        {
+          "id": "w62_9_9",
+          "en": "wonderful",
+          "zh": "了不起的，出色的",
+          "emoji": "✨"
+        },
+        {
+          "id": "w62_9_10",
+          "en": "happiness",
+          "zh": "幸福，愉快",
+          "emoji": "😊"
+        },
+        {
+          "id": "w62_9_11",
+          "en": "what",
+          "zh": "多么",
+          "emoji": "❓"
+        }
+      ],
+      "10": [
+        {
+          "id": "w62_10_1",
+          "en": "middle",
+          "zh": "中间的，中等的",
+          "emoji": "↔️"
+        },
+        {
+          "id": "w62_10_2",
+          "en": "middle school",
+          "zh": "中学",
+          "emoji": "🏫"
+        },
+        {
+          "id": "w62_10_3",
+          "en": "speech",
+          "zh": "演说，讲演",
+          "emoji": "🎤"
+        },
+        {
+          "id": "w62_10_4",
+          "en": "classmate",
+          "zh": "同班同学",
+          "emoji": "👫"
+        },
+        {
+          "id": "w62_10_5",
+          "en": "leave",
+          "zh": "离开",
+          "emoji": "🚪"
+        },
+        {
+          "id": "w62_10_6",
+          "en": "September",
+          "zh": "九月",
+          "emoji": "🍁"
+        },
+        {
+          "id": "w62_10_7",
+          "en": "excited",
+          "zh": "激动的，兴奋的",
+          "emoji": "🤩"
+        },
+        {
+          "id": "w62_10_8",
+          "en": "geography",
+          "zh": "地理",
+          "emoji": "🌍"
+        },
+        {
+          "id": "w62_10_9",
+          "en": "same",
+          "zh": "相同的",
+          "emoji": "👯"
+        },
+        {
+          "id": "w62_10_10",
+          "en": "at the same time",
+          "zh": "同时",
+          "emoji": "🕐"
+        },
+        {
+          "id": "w62_10_11",
+          "en": "spoke",
+          "zh": "（speak的过去式）说（某种语言）",
+          "emoji": "🗣️"
+        },
+        {
+          "id": "w62_10_12",
+          "en": "little",
+          "zh": "极少量的",
+          "emoji": "🔹"
+        },
+        {
+          "id": "w62_10_13",
+          "en": "keep on",
+          "zh": "保持",
+          "emoji": "🔁"
+        },
+        {
+          "id": "w62_10_14",
+          "en": "practise",
+          "zh": "练习",
+          "emoji": "✏️"
+        },
+        {
+          "id": "w62_10_15",
+          "en": "sometime",
+          "zh": "某个时候",
+          "emoji": "⏰"
+        },
+        {
+          "id": "w62_10_16",
+          "en": "each other",
+          "zh": "互相，彼此",
+          "emoji": "🤝"
+        },
+        {
+          "id": "w62_10_17",
+          "en": "chemistry",
+          "zh": "化学",
+          "emoji": "⚗️"
+        },
+        {
+          "id": "w62_10_18",
+          "en": "physics",
+          "zh": "物理",
+          "emoji": "🔭"
+        }
+      ]
+    }
+  }};
+
+      // 扁平化所有单词，供 by-ids 查询
+      function flattenAllWords() {
+        const all = [];
+        Object.values(BACKEND_WORDS).forEach(grade => {
+          Object.values(grade.units).forEach(unitWords => {
+            all.push(...unitWords);
+          });
+        });
+        return all;
+      }
+      const ALL_WORDS = flattenAllWords();
+
+      // ==============================================================
+      // 3. 模拟后端 API 客户端
+      // ==============================================================
+      const API = {
+        delay: 300,
+
+        async getWords(params) {
+          console.log('[API] 请求单词列表:', params);
+          await new Promise(r => setTimeout(r, this.delay));
+          const { grade, semester, units } = params;
+          const key = `${grade}-${semester}`;
+          const gradeData = BACKEND_WORDS[key];
+          if (!gradeData) return { code: 0, data: [] };
+
+          let allWords = [];
+          const unitKeys = Object.keys(gradeData.units);
+          if (!units || units.length === 0 || units.includes('all')) {
+            unitKeys.forEach(u => allWords.push(...(gradeData.units[u] || [])));
+          } else {
+            units.forEach(u => allWords.push(...(gradeData.units[u] || [])));
+          }
+          return { code: 0, data: allWords };
+        },
+
+        async getGradeList() {
+          await new Promise(r => setTimeout(r, this.delay));
+          const list = Object.keys(BACKEND_WORDS).map(key => {
+            const [grade, semester] = key.split('-');
+            return {
+              grade: parseInt(grade),
+              semester: parseInt(semester),
+              label: BACKEND_WORDS[key].label,
+              units: Object.keys(BACKEND_WORDS[key].units).map(Number)
+            };
+          });
+          return { code: 0, data: list };
+        },
+
+        async getUserWordbank() {
+          await new Promise(r => setTimeout(r, this.delay));
+          const saved = localStorage.getItem('backend_wordbank');
+          const ids = saved ? JSON.parse(saved) : [];
+          return { code: 0, data: { wordIds: ids } };
+        },
+
+        async syncUserWordbank(wordIds) {
+          await new Promise(r => setTimeout(r, this.delay));
+          localStorage.setItem('backend_wordbank', JSON.stringify(wordIds));
+          return { code: 0, data: { wordIds } };
+        },
+
+        async getWordsByIds(wordIds) {
+          await new Promise(r => setTimeout(r, this.delay));
+          const result = wordIds.map(id => ALL_WORDS.find(w => w.id === id)).filter(Boolean);
+          return { code: 0, data: result };
+        }
+      };
+
+      // ==============================================================
+      // 4. 状态
+      // ==============================================================
+      const state = {
+        grade: 3,
+        semester: 1,
+        selectedUnits: ['all'],
+        level: 1,
+        pairsCount: 3,
+        cards: [],
+        selected: [],
+        locked: false,
+        matchedCount: 0,
+        isPreview: true,
+        previewTimer: null,
+        flipBackTimer: null,      // 失配后翻回的定时器
+        customWordIds: [],
+        deleteMode: false,
+        currentWordPool: [],
+        backendReady: true,
+      };
+
+      const $ = id => document.getElementById(id);
+      const gridEl = $('gridContainer');
+      const statusText = $('statusText');
+      const pairCounter = $('pairCounter');
+      const levelDisplay = $('levelDisplay');
+      const previewFill = $('previewFill');
+      const toast = $('toast');
+      const wordbankTags = $('wordbankTags');
+      const wordCount = $('wordCount');
+      const libraryPage = $('libraryPage');
+      const libraryGrid = $('libraryGrid');
+      const deleteHint = $('deleteHint');
+      const cancelDeleteBtn = $('cancelDeleteBtn');
+      const gradeBadge = $('gradeBadge');
+      const gradeModal = $('gradeModal');
+      const statusDot = $('statusDot');
+      const statusTextBackend = $('statusTextBackend');
+
+      // ==============================================================
+      // 5. 工具
+      // ==============================================================
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function getPairsByLevel(level) {
+        const map = { 1: 3, 2: 4, 3: 6, 4: 8 };
+        return map[level] || 3;
+      }
+
+      function getGridClass(pairs) {
+        if (pairs <= 3) return 'grid-3';
+        if (pairs === 4) return 'grid-4';
+        if (pairs <= 6) return 'grid-3';
+        return 'grid-4';
+      }
+
+      // ==============================================================
+      // 6. 语音 & 音效
+      // ==============================================================
+      function speakWord(word, callback) {
+        if (!window.speechSynthesis) {
+          if (callback) callback();
+          return;
+        }
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.cancel();
+        utterance.onend = function() {
+          if (callback) callback();
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function playWordWithFeedback(word, element) {
+        const indicator = element ? element.querySelector('.speaker-icon, .play-indicator') : null;
+        if (indicator) {
+          indicator.classList.remove('active');
+          void indicator.offsetWidth; // 强制重排以重启动画
+          indicator.classList.add('active');
+        }
+        speakWord(word);
+      }
+
+      // AudioContext 在用户手势前为 suspended，需在首次交互时 resume
+      let audioCtx = null;
+      function ensureAudio() {
+        try {
+          if (!audioCtx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) audioCtx = new AC();
+          }
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        } catch (e) { /* 静默降级 */ }
+      }
+
+      function playBeep(type) {
+        ensureAudio();
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'sine';
+          if (type === 'success') {
+            osc.frequency.value = 880;
+            gain.gain.value = 0.15;
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.12);
+          } else {
+            osc.frequency.value = 380;
+            gain.gain.value = 0.12;
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.18);
+          }
+        } catch (e) { /* 静默降级 */ }
+      }
+
+      // ==============================================================
+      // 7. Toast
+      // ==============================================================
+      let toastTimer = null;
+      function showToast(text, duration = 1200) {
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
+      }
+
+      // ==============================================================
+      // 8. 定时器清理（避免叠加）
+      // ==============================================================
+      function clearTimers() {
+        if (state.previewTimer) { clearInterval(state.previewTimer); state.previewTimer = null; }
+        if (state.flipBackTimer) { clearTimeout(state.flipBackTimer); state.flipBackTimer = null; }
+      }
+
+      // ==============================================================
+      // 9. 核心游戏
+      // ==============================================================
+      function buildCardsFromWords(words) {
+        let cards = [];
+        words.forEach((w, idx) => {
+          cards.push({ id: `c-${idx}-en`, wordId: w.id, type: 'en', word: w, matched: false, flipped: false });
+          cards.push({ id: `c-${idx}-zh`, wordId: w.id, type: 'zh', word: w, matched: false, flipped: false });
+        });
+        return shuffleArray(cards);
+      }
+
+      // 根据关卡构建牌组；当词库不足时自动收敛对数，保证可通关
+      function buildGame(level) {
+        const desired = getPairsByLevel(level);
+        const pool = state.currentWordPool || [];
+        if (pool.length === 0) return [];
+        const pairs = Math.min(desired, Math.floor(pool.length / 2));
+        state.pairsCount = pairs;
+        const words = shuffleArray([...pool]).slice(0, pairs);
+        return buildCardsFromWords(words);
+      }
+
+      async function loadWordPool() {
+        try {
+          const result = await API.getWords({
+            grade: state.grade,
+            semester: state.semester,
+            units: state.selectedUnits
+          });
+          if (result.code === 0) {
+            state.currentWordPool = result.data;
+            updateGradeBadge();
+            return true;
+          }
+          return false;
+        } catch (e) {
+          console.error('加载词库失败:', e);
+          return false;
+        }
+      }
+
+      function resetGame(level = state.level) {
+        clearTimers();
+        window.speechSynthesis.cancel();
+
+        state.level = level;
+        state.selected = [];
+        state.locked = false;
+        state.matchedCount = 0;
+        state.isPreview = true;
+
+        const cards = buildGame(level);
+        if (cards.length === 0) {
+          state.cards = [];
+          state.pairsCount = getPairsByLevel(level);
+          levelDisplay.textContent = `Lv.${level} · 0对`;
+          updatePairCounter();
+          statusText.textContent = '📭 词库为空';
+          previewFill.style.width = '0%';
+          renderGrid();
+          showToast('⚠️ 当前年级/单元暂无单词，请更换', 1800);
+          return;
+        }
+        state.cards = cards;
+
+        const poolSize = state.currentWordPool.length;
+        const maxPairs = Math.floor(poolSize / 2);
+        levelDisplay.textContent =
+          `Lv.${level} · ${state.pairsCount}对 (共${poolSize}词)` +
+          (state.pairsCount < maxPairs ? ` · 已收敛` : '');
+        updatePairCounter();
+        statusText.textContent = `👀 记忆时间 ${PREVIEW_SECONDS}s`;
+        previewFill.style.width = '100%';
+
+        renderGrid();
+        startPreview();
+      }
+
+      function startPreview() {
+        let remaining = PREVIEW_SECONDS;
+        previewFill.style.width = '100%';
+        statusText.textContent = `👀 记忆时间 ${remaining}s · 点卡片听音`;
+
+        if (state.previewTimer) clearInterval(state.previewTimer);
+        state.previewTimer = setInterval(() => {
+          remaining -= 1;
+          const pct = Math.max(0, (remaining / PREVIEW_SECONDS) * 100);
+          previewFill.style.width = `${pct}%`;
+          if (remaining > 0) {
+            statusText.textContent = `👀 记忆时间 ${remaining}s · 点卡片听音`;
+          } else {
+            clearInterval(state.previewTimer);
+            state.previewTimer = null;
+            document.querySelectorAll('.card').forEach(el => {
+              if (!el.classList.contains('matched')) el.classList.remove('flipped');
+            });
+            state.isPreview = false;
+            statusText.textContent = '🔍 开始配对！';
+          }
+        }, 1000);
+      }
+
+      function renderGrid() {
+        const pairs = state.pairsCount;
+        gridEl.className = `grid ${getGridClass(pairs)}`;
+        gridEl.innerHTML = '';
+
+        state.cards.forEach((card, index) => {
+          const cardDiv = document.createElement('div');
+          cardDiv.className = 'card';
+          cardDiv.dataset.index = index;
+
+          const inner = document.createElement('div');
+          inner.className = 'card-inner';
+
+          const front = document.createElement('div');
+          front.className = 'card-front';
+          const w = card.word;
+          if (card.type === 'en') {
+            front.innerHTML = `
+              <div class="emoji-big">${w.emoji}</div>
+              <div class="word-en">${w.en}</div>
+              <div class="word-zh">${w.zh}</div>
+              <span class="speaker-icon">🔊</span>
+            `;
+          } else {
+            front.innerHTML = `
+              <div class="emoji-big">${w.emoji}</div>
+              <div class="word-en" style="font-size:1.1rem;">${w.zh}</div>
+              <div class="word-zh" style="background:#dcc4ee;">${w.en}</div>
+              <span class="speaker-icon">🔊</span>
+            `;
+          }
+
+          const back = document.createElement('div');
+          back.className = 'card-back';
+
+          inner.appendChild(front);
+          inner.appendChild(back);
+          cardDiv.appendChild(inner);
+          gridEl.appendChild(cardDiv);
+
+          // 长按相关：仅用 pointer 事件（pointer 已统一覆盖 mouse/touch），避免重复计时器
+          let longPressTimer = null;
+          let suppressClick = false;
+          const startLongPress = () => {
+            suppressClick = false;
+            clearTimeout(longPressTimer);
+            longPressTimer = setTimeout(() => {
+              suppressClick = true;
+              handleLongPress(index);
+            }, LONG_PRESS_MS);
+          };
+          const cancelLongPress = () => {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+          };
+
+          cardDiv.addEventListener('click', () => {
+            if (suppressClick) { suppressClick = false; return; } // 抑制长按后的误触
+            onCardClick(index);
+          });
+          cardDiv.addEventListener('pointerdown', startLongPress);
+          cardDiv.addEventListener('pointerup', cancelLongPress);
+          cardDiv.addEventListener('pointerleave', cancelLongPress);
+          cardDiv.addEventListener('pointercancel', cancelLongPress);
+        });
+
+        // 统一根据预览状态 / 已配对状态设置翻面
+        const cardEls = gridEl.children;
+        state.cards.forEach((c, i) => {
+          const el = cardEls[i];
+          if (!el) return;
+          if (state.isPreview || c.matched) {
+            el.classList.add('flipped');
+            if (c.matched) el.classList.add('matched');
+          } else {
+            el.classList.remove('flipped', 'matched');
+          }
+        });
+      }
+
+      function handleLongPress(index) {
+        const card = state.cards[index];
+        if (state.isPreview) return; // 预览期仅用于听音，不触发加入词库
+        if (!card || !card.matched) {
+          showToast('⚠️ 只有已配对的卡片才能加入词库', 1000);
+          return;
+        }
+        addWordToCustom(card.wordId);
+      }
+
+      function onCardClick(index) {
+        if (state.locked) return;
+        const card = state.cards[index];
+        if (!card) return;
+
+        // 记忆预览时间内：点击卡片播放单词读音（不触发配对翻面）
+        if (state.isPreview) {
+          playWordWithFeedback(card.word.en, gridEl.children[index]);
+          return;
+        }
+
+        // 已翻开（含已配对）的卡片：点击重播发音
+        if (card.flipped) {
+          playWordWithFeedback(card.word.en, gridEl.children[index]);
+          return;
+        }
+        if (state.selected.includes(index)) return;
+
+        const el = gridEl.children[index];
+        if (!el) return;
+        el.classList.add('flipped');
+        card.flipped = true;
+        state.selected.push(index);
+
+        if (state.selected.length === 2) {
+          state.locked = true;
+          checkMatch();
+        } else {
+          playWordWithFeedback(card.word.en, el);
+        }
+      }
+
+      function checkMatch() {
+        const [i1, i2] = state.selected;
+        const c1 = state.cards[i1];
+        const c2 = state.cards[i2];
+        const isMatch = (c1.wordId === c2.wordId) && (c1.type !== c2.type);
+
+        if (isMatch) {
+          c1.matched = true;
+          c2.matched = true;
+          state.matchedCount += 1;
+          updatePairCounter();
+
+          const el1 = gridEl.children[i1];
+          const el2 = gridEl.children[i2];
+          if (el1) el1.classList.add('matched');
+          if (el2) el2.classList.add('matched');
+
+          speakWord(c1.word.en);
+          playBeep('success');
+          showToast(`✅ ${c1.word.en} 配对成功！`, 1000);
+
+          state.selected = [];
+          state.locked = false;
+
+          if (state.matchedCount === state.pairsCount) {
+            state.flipBackTimer = setTimeout(() => {
+              showToast('🎉 全配对完成！', 2000);
+              statusText.textContent = '🎉 胜利！点"新一局"继续';
+            }, 400);
+          }
+        } else {
+          playBeep('fail');
+          showToast('❌ 再试试吧', 600);
+          state.flipBackTimer = setTimeout(() => {
+            const el1 = gridEl.children[i1];
+            const el2 = gridEl.children[i2];
+            if (el1 && !state.cards[i1].matched) {
+              el1.classList.remove('flipped');
+              state.cards[i1].flipped = false;
+            }
+            if (el2 && !state.cards[i2].matched) {
+              el2.classList.remove('flipped');
+              state.cards[i2].flipped = false;
+            }
+            state.selected = [];
+            state.locked = false;
+          }, 700);
+        }
+      }
+
+      function updatePairCounter() {
+        pairCounter.textContent = `✅ ${state.matchedCount} / ${state.pairsCount}`;
+      }
+
+      // ==============================================================
+      // 10. 自定义词库 (使用后端API)
+      // ==============================================================
+      async function addWordToCustom(wordId) {
+        if (!state.customWordIds.includes(wordId)) {
+          state.customWordIds.push(wordId);
+          await API.syncUserWordbank(state.customWordIds);
+          renderWordbank();
+          renderLibrary();
+          const w = state.currentWordPool.find(item => item.id === wordId);
+          if (w) showToast(`➕ ${w.en} 已加入词库`, 800);
+        } else {
+          showToast('⏳ 已在词库中', 600);
+        }
+      }
+
+      async function removeWordFromCustom(wordId) {
+        state.customWordIds = state.customWordIds.filter(id => id !== wordId);
+        await API.syncUserWordbank(state.customWordIds);
+        renderWordbank();
+        renderLibrary();
+        const w = state.currentWordPool.find(item => item.id === wordId);
+        if (w) showToast(`🗑️ 已删除 ${w.en}`, 600);
+        if (state.customWordIds.length === 0) {
+          exitDeleteMode();
+        }
+      }
+
+      async function renderWordbank() {
+        wordbankTags.innerHTML = '';
+        const ids = state.customWordIds;
+        wordCount.textContent = ids.length;
+        if (ids.length === 0) {
+          wordbankTags.innerHTML = '<span class="wordbank-empty">长按已配对卡片添加 ✨</span>';
+          return;
+        }
+        try {
+          const result = await API.getWordsByIds(ids);
+          const words = result.data || [];
+          words.forEach(w => {
+            const tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.innerHTML = `${w.emoji} ${w.en} <span class="remove" data-id="${w.id}">✕</span>`;
+            tag.querySelector('.remove').addEventListener('click', (e) => {
+              e.stopPropagation();
+              removeWordFromCustom(w.id);
+            });
+            tag.addEventListener('click', () => speakWord(w.en));
+            wordbankTags.appendChild(tag);
+          });
+        } catch (e) {
+          console.error('加载词库详情失败:', e);
+        }
+      }
+
+      // ==============================================================
+      // 11. 词库独立页面
+      // ==============================================================
+      async function renderLibrary() {
+        libraryGrid.innerHTML = '';
+        const ids = state.customWordIds;
+
+        if (ids.length === 0) {
+          libraryGrid.innerHTML = '<div class="library-empty">📭 词库为空，长按游戏中的配对卡片添加</div>';
+          exitDeleteMode();
+          return;
+        }
+
+        try {
+          const result = await API.getWordsByIds(ids);
+          const words = result.data || [];
+
+          words.forEach(w => {
+            const card = document.createElement('div');
+            card.className = 'library-card';
+            card.dataset.wordId = w.id;
+
+            const badge = document.createElement('div');
+            badge.className = 'delete-badge';
+            badge.textContent = '−';
+            card.appendChild(badge);
+
+            const content = document.createElement('div');
+            content.innerHTML = `
+              <div class="emoji">${w.emoji}</div>
+              <div class="en">${w.en}</div>
+              <div class="zh">${w.zh}</div>
+              <span class="play-indicator">🔊</span>
+            `;
+            card.appendChild(content);
+
+            let longPressTimer = null;
+            let suppressClick = false;
+            const startLongPress = () => {
+              if (!state.deleteMode && state.customWordIds.length > 0) {
+                suppressClick = false;
+                clearTimeout(longPressTimer);
+                longPressTimer = setTimeout(() => {
+                  suppressClick = true;
+                  enterDeleteMode();
+                  document.querySelectorAll('.library-card').forEach(el => el.classList.add('pending-delete'));
+                  showToast('👆 点击卡片删除 · 点击空白取消', 1500);
+                }, LONG_PRESS_MS);
+              }
+            };
+            const cancelLongPress = () => { clearTimeout(longPressTimer); longPressTimer = null; };
+
+            card.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (suppressClick) { suppressClick = false; return; } // 抑制长按后的误触删除
+              if (state.deleteMode) {
+                card.classList.add('deleting');
+                setTimeout(() => removeWordFromCustom(w.id), 250);
+              } else {
+                playWordWithFeedback(w.en, card);
+              }
+            });
+            card.addEventListener('pointerdown', startLongPress);
+            card.addEventListener('pointerup', cancelLongPress);
+            card.addEventListener('pointerleave', cancelLongPress);
+            card.addEventListener('pointercancel', cancelLongPress);
+
+            libraryGrid.appendChild(card);
+          });
+
+          if (state.deleteMode) {
+            document.querySelectorAll('.library-card').forEach(el => el.classList.add('pending-delete'));
+            deleteHint.classList.add('active');
+            cancelDeleteBtn.style.display = 'flex';
+          }
+        } catch (e) {
+          console.error('加载词库失败:', e);
+          libraryGrid.innerHTML = '<div class="library-empty">⚠️ 加载词库失败，请重试</div>';
+        }
+      }
+
+      function enterDeleteMode() {
+        state.deleteMode = true;
+        deleteHint.classList.add('active');
+        cancelDeleteBtn.style.display = 'flex';
+        document.querySelectorAll('.library-card').forEach(el => el.classList.add('pending-delete'));
+      }
+
+      function exitDeleteMode() {
+        state.deleteMode = false;
+        deleteHint.classList.remove('active');
+        cancelDeleteBtn.style.display = 'none';
+        document.querySelectorAll('.library-card').forEach(el => el.classList.remove('pending-delete'));
+      }
+
+      function handleLibraryClick(e) {
+        if (e.target === libraryPage || e.target === libraryGrid) {
+          if (state.deleteMode) {
+            exitDeleteMode();
+            showToast('已取消删除', 600);
+          }
+        }
+      }
+
+      function openLibrary() {
+        exitDeleteMode();
+        renderLibrary();
+        libraryPage.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLibrary() {
+        exitDeleteMode();
+        libraryPage.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // ==============================================================
+      // 11.5 单元单词卡片页（各单元全部单词查看 + 点击语音播放）
+      // ==============================================================
+      const unitWordsPage = $('unitWordsPage');
+      const unitWordsGrid = $('unitWordsGrid');
+      const unitWordsTabs = $('unitWordsTabs');
+      const unitWordsInfo = $('unitWordsInfo');
+      let unitWordsCurrent = null;
+
+      function escapeHtml(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function getUnitOrder() {
+        const key = `${state.grade}-${state.semester}`;
+        const gradeData = BACKEND_WORDS[key];
+        if (!gradeData) return [];
+        return Object.keys(gradeData.units);
+      }
+
+      function getUnitWordList(unitKey) {
+        const key = `${state.grade}-${state.semester}`;
+        const gradeData = BACKEND_WORDS[key];
+        if (!gradeData || !unitKey) return [];
+        const units = gradeData.units;
+        if (unitKey === 'all') {
+          let all = [];
+          Object.keys(units).forEach(u => { all = all.concat(units[u]); });
+          return all;
+        }
+        return units[unitKey] || [];
+      }
+
+      function unitLabelText(u, isNew) {
+        if (u === 'all') return '全部单元';
+        if (u === 'w') return '预备单元';
+        return (isNew ? 'Unit ' : 'Module ') + u;
+      }
+
+      function renderUnitWordsPager() {
+        const order = getUnitOrder();
+        const key = `${state.grade}-${state.semester}`;
+        const isNew = NEW_EDITION_KEYS.includes(key);
+        unitWordsTabs.innerHTML = '';
+        if (order.length === 0) { unitWordsCurrent = null; return; }
+        // 保证当前单元有效
+        if (!order.includes(unitWordsCurrent)) unitWordsCurrent = order[0];
+        const idx = order.indexOf(unitWordsCurrent);
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'unit-nav-btn';
+        prevBtn.textContent = '‹';
+        prevBtn.setAttribute('aria-label', '上一单元');
+        prevBtn.disabled = idx <= 0;
+        prevBtn.addEventListener('click', () => {
+          if (idx > 0) { unitWordsCurrent = order[idx - 1]; renderUnitWordsPager(); renderUnitWords(); }
+        });
+
+        const label = document.createElement('div');
+        label.className = 'unit-current-label';
+        label.textContent = unitLabelText(unitWordsCurrent, isNew);
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'unit-nav-btn';
+        nextBtn.textContent = '›';
+        nextBtn.setAttribute('aria-label', '下一单元');
+        nextBtn.disabled = idx >= order.length - 1;
+        nextBtn.addEventListener('click', () => {
+          if (idx < order.length - 1) { unitWordsCurrent = order[idx + 1]; renderUnitWordsPager(); renderUnitWords(); }
+        });
+
+        unitWordsTabs.appendChild(prevBtn);
+        unitWordsTabs.appendChild(label);
+        unitWordsTabs.appendChild(nextBtn);
+      }
+
+      function renderUnitWords() {
+        const words = getUnitWordList(unitWordsCurrent);
+        unitWordsGrid.innerHTML = '';
+        unitWordsInfo.textContent = `${words.length} 个单词`;
+
+        if (words.length === 0) {
+          unitWordsGrid.innerHTML = '<div class="library-empty">📭 该单元暂无单词</div>';
+          return;
+        }
+
+        words.forEach(w => {
+          const card = document.createElement('div');
+          card.className = 'library-card';
+          const content = document.createElement('div');
+          content.innerHTML = `
+            <div class="emoji">${w.emoji || '📘'}</div>
+            <div class="en">${escapeHtml(w.en)}</div>
+            <div class="zh">${escapeHtml(w.zh)}</div>
+            <span class="play-indicator">🔊</span>
+          `;
+          card.appendChild(content);
+          // 点击图片/卡片任意位置均可播放语音
+          card.addEventListener('click', () => playWordWithFeedback(w.en, card));
+          unitWordsGrid.appendChild(card);
+        });
+      }
+
+      function openUnitWords() {
+        const sel = state.selectedUnits.filter(u => u !== 'all');
+        unitWordsCurrent = sel.length ? sel[0] : getUnitOrder()[0];
+        renderUnitWordsPager();
+        renderUnitWords();
+        unitWordsPage.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeUnitWords() {
+        unitWordsPage.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // ==============================================================
+      // 12. 年级设置
+      // ==============================================================
+      function updateGradeBadge() {
+        const key = `${state.grade}-${state.semester}`;
+        const data = BACKEND_WORDS[key];
+        gradeBadge.textContent = data
+          ? `📖 ${data.label}`
+          : `📖 ${state.grade}年级·${state.semester === 1 ? '上' : '下'}`;
+      }
+
+      // 2024 新版册别（Unit 结构）；其余为旧版三起（Module 结构）
+      const NEW_EDITION_KEYS = ['3-1', '3-2', '4-1', '4-2'];
+
+      // 按所选年级/学期动态生成单元按钮（Unit / Module / 预备）
+      function renderUnitOptions() {
+        const key = `${state.grade}-${state.semester}`;
+        const gradeData = BACKEND_WORDS[key];
+        const unitOpts = $('unitOptions');
+        unitOpts.innerHTML = '';
+        const allBtn = document.createElement('button');
+        allBtn.className = 'grade-option unit-option' + (state.selectedUnits.includes('all') ? ' active' : '');
+        allBtn.dataset.unit = 'all';
+        allBtn.textContent = '全部';
+        unitOpts.appendChild(allBtn);
+        if (!gradeData) return;
+        const isNew = NEW_EDITION_KEYS.includes(key);
+        Object.keys(gradeData.units).forEach(u => {
+          const btn = document.createElement('button');
+          btn.className = 'grade-option unit-option';
+          btn.dataset.unit = u;
+          btn.textContent = (u === 'w') ? '预备' : (isNew ? 'Unit ' : 'Module ') + u;
+          if (state.selectedUnits.includes(u)) btn.classList.add('active');
+          unitOpts.appendChild(btn);
+        });
+      }
+
+      async function applyGradeSettings() {
+        await loadWordPool();
+        updateGradeBadge();
+        saveToLocal();        // 即时持久化，避免依赖 beforeunload
+        resetGame(1);
+        closeGradeModal();
+        const count = state.currentWordPool.length;
+        showToast(`✅ 已切换到 ${gradeBadge.textContent.replace('📖 ', '')}，共${count}个单词`, 1500);
+      }
+
+      function openGradeModal() {
+        document.querySelectorAll('#gradeOptions .grade-option').forEach(el => {
+          el.classList.toggle('active', parseInt(el.dataset.grade) === state.grade);
+        });
+        document.querySelectorAll('#semesterOptions .grade-option').forEach(el => {
+          el.classList.toggle('active', parseInt(el.dataset.semester) === state.semester);
+        });
+        renderUnitOptions();
+        gradeModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeGradeModal() {
+        gradeModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // ==============================================================
+      // 13. 后端同步功能
+      // ==============================================================
+      async function syncFromBackend() {
+        showToast('🔄 正在从后端同步词库...', 2000);
+        try {
+          const result = await API.getUserWordbank();
+          if (result.code === 0) {
+            state.customWordIds = result.data.wordIds || [];
+            await renderWordbank();
+            await renderLibrary();
+            showToast(`✅ 同步成功！共 ${state.customWordIds.length} 个单词`, 1500);
+          }
+        } catch (e) {
+          console.error('同步失败:', e);
+          showToast('⚠️ 同步失败，请检查网络', 1500);
+        }
+      }
+
+      async function fetchFromBackendForGrade() {
+        showToast('📡 正在从后端加载词库...', 2000);
+        try {
+          const result = await API.getWords({
+            grade: state.grade,
+            semester: state.semester,
+            units: state.selectedUnits
+          });
+          if (result.code === 0 && result.data.length > 0) {
+            state.currentWordPool = result.data;
+            resetGame(1);
+            showToast(`✅ 加载成功！共 ${result.data.length} 个单词`, 1500);
+          } else {
+            showToast('⚠️ 该年级暂无单词数据', 1500);
+          }
+        } catch (e) {
+          console.error('加载失败:', e);
+          showToast('⚠️ 加载失败，请重试', 1500);
+        }
+      }
+
+      // ==============================================================
+      // 14. 本地存储
+      // ==============================================================
+      function saveToLocal() {
+        try {
+          const data = {
+            grade: state.grade,
+            semester: state.semester,
+            selectedUnits: state.selectedUnits,
+          };
+          localStorage.setItem('wordbank_config', JSON.stringify(data));
+        } catch (e) { /* ignore */ }
+      }
+
+      function loadFromLocal() {
+        try {
+          const saved = localStorage.getItem('wordbank_config');
+          if (saved) {
+            const data = JSON.parse(saved);
+            if (data.grade) state.grade = data.grade;
+            if (data.semester) state.semester = data.semester;
+            if (data.selectedUnits && Array.isArray(data.selectedUnits)) {
+              state.selectedUnits = data.selectedUnits;
+            }
+          }
+          const wordbank = localStorage.getItem('backend_wordbank');
+          if (wordbank) {
+            state.customWordIds = JSON.parse(wordbank);
+          }
+        } catch (e) { /* ignore */ }
+      }
+
+      // ==============================================================
+      // 15. 新游戏 & 洗牌
+      // ==============================================================
+      function newGame() {
+        let nextLevel = state.level + 1;
+        if (nextLevel > 4) nextLevel = 1;
+        resetGame(nextLevel);
+      }
+
+      function shuffleGame() {
+        // 刷新重开当前局：保持当前关卡，重新发牌并重新排序（含记忆时间重放）
+        resetGame(state.level);
+        showToast('🔀 已重开本局', 800);
+      }
+
+      // ==============================================================
+      // 16. 初始化
+      // ==============================================================
+      async function init() {
+        loadFromLocal();
+        await loadWordPool();
+        await renderWordbank();
+        await renderLibrary();
+        resetGame(1);
+
+        statusDot.className = 'dot online';
+        statusTextBackend.textContent = '后端就绪 (模拟)';
+
+        // 首次用户手势时激活音频上下文
+        document.addEventListener('pointerdown', ensureAudio, { once: true });
+
+        // 年级设置
+        $('gradeBadge').addEventListener('click', openGradeModal);
+        $('closeGradeModalBtn').addEventListener('click', closeGradeModal);
+
+        document.querySelectorAll('#gradeOptions .grade-option').forEach(el => {
+          el.addEventListener('click', () => {
+            document.querySelectorAll('#gradeOptions .grade-option').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            state.grade = parseInt(el.dataset.grade);
+            state.selectedUnits = ['all'];
+            renderUnitOptions();
+          });
+        });
+
+        document.querySelectorAll('#semesterOptions .grade-option').forEach(el => {
+          el.addEventListener('click', () => {
+            document.querySelectorAll('#semesterOptions .grade-option').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            state.semester = parseInt(el.dataset.semester);
+            state.selectedUnits = ['all'];
+            renderUnitOptions();
+          });
+        });
+
+        // 单元按钮为动态生成，使用事件委托
+        $('unitOptions').addEventListener('click', (e) => {
+          const btn = e.target.closest('.grade-option');
+          if (!btn) return;
+          const unit = btn.dataset.unit;
+          if (unit === 'all') {
+            state.selectedUnits = ['all'];
+          } else {
+            state.selectedUnits = state.selectedUnits.filter(u => u !== 'all');
+            btn.classList.toggle('active');
+            if (btn.classList.contains('active')) {
+              if (!state.selectedUnits.includes(unit)) state.selectedUnits.push(unit);
+            } else {
+              state.selectedUnits = state.selectedUnits.filter(u => u !== unit);
+            }
+            if (state.selectedUnits.length === 0) {
+              state.selectedUnits = ['all'];
+            }
+          }
+          document.querySelectorAll('#unitOptions .grade-option').forEach(b => {
+            b.classList.toggle('active', state.selectedUnits.includes(b.dataset.unit));
+          });
+        });
+
+        $('applyGradeBtn').addEventListener('click', applyGradeSettings);
+        $('resetGradeBtn').addEventListener('click', async () => {
+          state.grade = 3;
+          state.semester = 1;
+          state.selectedUnits = ['all'];
+          await applyGradeSettings();
+        });
+        $('fetchFromBackendBtn').addEventListener('click', fetchFromBackendForGrade);
+
+        // 其他按钮
+        $('newGameBtn').addEventListener('click', newGame);
+        $('shuffleBtn').addEventListener('click', shuffleGame);
+        $('openLibraryBtn').addEventListener('click', openLibrary);
+        $('closeLibraryBtn').addEventListener('click', closeLibrary);
+        $('openUnitWordsBtn').addEventListener('click', openUnitWords);
+        $('closeUnitWordsBtn').addEventListener('click', closeUnitWords);
+        $('cancelDeleteBtn').addEventListener('click', () => {
+          exitDeleteMode();
+          showToast('已取消删除', 600);
+        });
+        $('syncBtn').addEventListener('click', syncFromBackend);
+        $('syncLibraryBtn').addEventListener('click', syncFromBackend);
+
+        libraryPage.addEventListener('click', handleLibraryClick);
+        gradeModal.addEventListener('click', (e) => {
+          if (e.target === gradeModal) closeGradeModal();
+        });
+
+        window.addEventListener('beforeunload', saveToLocal);
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>

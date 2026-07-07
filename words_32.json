@@ -1,0 +1,100 @@
+{
+  "3-2": {
+    "label": "三年级·下",
+    "units": {
+      "1": [
+        {"en": "animal", "zh": "动物"},
+        {"en": "panda", "zh": "大熊猫"},
+        {"en": "elephant", "zh": "象；大象"},
+        {"en": "bear", "zh": "熊"},
+        {"en": "giraffe", "zh": "长颈鹿"},
+        {"en": "monkey", "zh": "猴；猴子"},
+        {"en": "tiger", "zh": "老虎"},
+        {"en": "lion", "zh": "狮子"},
+        {"en": "them", "zh": "他们；她们；它们"},
+        {"en": "draw", "zh": "画；绘画"},
+        {"en": "out", "zh": "往外；向外；出来"},
+        {"en": "big", "zh": "大的"},
+        {"en": "small", "zh": "小的"},
+        {"en": "tall", "zh": "高的"},
+        {"en": "short", "zh": "矮的；短的"},
+        {"en": "strong", "zh": "强壮的"},
+        {"en": "cute", "zh": "可爱的"},
+        {"en": "black", "zh": "黑色的"},
+        {"en": "white", "zh": "白色的"},
+        {"en": "zoo", "zh": "动物园"}
+      ],
+      "2": [
+        {"en": "head", "zh": "头"},
+        {"en": "eye", "zh": "眼睛"},
+        {"en": "ear", "zh": "耳朵"},
+        {"en": "nose", "zh": "鼻子"},
+        {"en": "mouth", "zh": "嘴；口"},
+        {"en": "face", "zh": "脸"},
+        {"en": "arm", "zh": "手臂；胳膊"},
+        {"en": "hand", "zh": "手"},
+        {"en": "leg", "zh": "腿"},
+        {"en": "foot", "zh": "脚"}
+      ],
+      "3": [
+        {"en": "food", "zh": "食物"},
+        {"en": "yummy", "zh": "好吃的；美味的"},
+        {"en": "rice", "zh": "米饭"},
+        {"en": "noodles", "zh": "面条"},
+        {"en": "cake", "zh": "蛋糕"},
+        {"en": "milk", "zh": "牛奶"},
+        {"en": "fruit", "zh": "水果"},
+        {"en": "apple", "zh": "苹果"},
+        {"en": "orange", "zh": "橙子；橘子"},
+        {"en": "strawberry", "zh": "草莓"},
+        {"en": "tomato", "zh": "西红柿；番茄"},
+        {"en": "egg", "zh": "蛋；鸡蛋"},
+        {"en": "carrot", "zh": "胡萝卜"},
+        {"en": "fish", "zh": "鱼"},
+        {"en": "chicken", "zh": "鸡肉"},
+        {"en": "meat", "zh": "肉"}
+      ],
+      "4": [
+        {"en": "hobby", "zh": "业余爱好；嗜好"},
+        {"en": "free", "zh": "空闲的；有空的"},
+        {"en": "after", "zh": "在……之后"},
+        {"en": "swim", "zh": "游泳"},
+        {"en": "a lot", "zh": "大量；许多"},
+        {"en": "these", "zh": "这些"},
+        {"en": "tai chi", "zh": "太极（拳）"},
+        {"en": "read", "zh": "阅读"},
+        {"en": "sing", "zh": "唱歌"},
+        {"en": "dance", "zh": "跳舞"},
+        {"en": "paint", "zh": "用颜料画；绘画"}
+      ],
+      "5": [
+        {"en": "time", "zh": "时间"},
+        {"en": "clock", "zh": "时钟"},
+        {"en": "o'clock", "zh": "……点钟"},
+        {"en": "tell", "zh": "告诉；讲述（时间）"},
+        {"en": "fifteen", "zh": "十五"},
+        {"en": "thirty", "zh": "三十"},
+        {"en": "forty-five", "zh": "四十五"},
+        {"en": "dinner", "zh": "晚餐；正餐"},
+        {"en": "past", "zh": "过（……点）"},
+        {"en": "half", "zh": "一半；半"},
+        {"en": "homework", "zh": "家庭作业"},
+        {"en": "need", "zh": "需要"},
+        {"en": "activity", "zh": "活动"},
+        {"en": "tick-tock", "zh": "（钟表滴答声）"},
+        {"en": "urgh", "zh": "（表示烦躁的叹词）"}
+      ],
+      "6": [
+        {"en": "week", "zh": "周；星期"},
+        {"en": "Monday", "zh": "星期一"},
+        {"en": "Tuesday", "zh": "星期二"},
+        {"en": "Wednesday", "zh": "星期三"},
+        {"en": "Thursday", "zh": "星期四"},
+        {"en": "Friday", "zh": "星期五"},
+        {"en": "Saturday", "zh": "星期六"},
+        {"en": "Sunday", "zh": "星期日"},
+        {"en": "usually", "zh": "通常"}
+      ]
+    }
+  }
+}
