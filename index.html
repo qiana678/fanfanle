@@ -20,6 +20,7 @@
       font-family: 'Quicksand', sans-serif;
       background: linear-gradient(145deg, #f5edfa 0%, #e3d5ef 100%);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -884,21 +885,81 @@
 
     @media (max-width: 420px) {
       .game-container {
-        padding: 14px 10px 18px;
+        padding: 10px 8px 14px;
+        max-height: calc(100dvh - 20px);
+        overflow-y: auto;
+        border-radius: 28px 28px 18px 18px;
+      }
+      body {
+        padding: 4px;
       }
       .header h1 {
-        font-size: 1.3rem;
+        font-size: 1.15rem;
+      }
+      .header {
+        margin-bottom: 6px;
+        gap: 4px;
+      }
+      .preview-bar {
+        margin: 2px 0 6px 0;
+        height: 6px;
+      }
+      .info-row {
+        margin-bottom: 6px;
+        font-size: 0.72rem;
       }
       .btn {
-        padding: 10px 14px;
-        font-size: 0.8rem;
-        min-width: 60px;
+        padding: 7px 10px;
+        font-size: 0.72rem;
+        min-width: 52px;
+        border-radius: 40px;
       }
-      .card-front .word-en {
-        font-size: 0.85rem;
+      .actions {
+        gap: 6px;
+        margin-top: 6px;
+      }
+      /* 卡片紧凑化：去正方形，改矮卡片 */
+      .card {
+        aspect-ratio: auto;
+        min-height: 0;
+      }
+      .card-inner {
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(80, 50, 110, 0.08);
+      }
+      .card-front, .card-back {
+        border-radius: 14px;
+        padding: 4px;
       }
       .card-front .emoji-big {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
+        line-height: 1.1;
+        margin-bottom: 1px;
+      }
+      .card-front .word-en {
+        font-size: 0.78rem;
+      }
+      .card-front .word-zh {
+        font-size: 0.58rem;
+        padding: 1px 8px;
+        margin-top: 2px;
+      }
+      .card-front .speaker-icon {
+        bottom: 3px;
+        right: 4px;
+        font-size: 0.65rem;
+      }
+      .grid {
+        gap: 8px;
+        margin: 4px 0 10px;
+      }
+      .level-badge {
+        padding: 4px 10px;
+        font-size: 0.7rem;
+      }
+      .grade-badge {
+        padding: 4px 10px;
+        font-size: 0.68rem;
       }
       .library-grid {
         grid-template-columns: repeat(3, 1fr);
