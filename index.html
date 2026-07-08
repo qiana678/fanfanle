@@ -886,12 +886,18 @@
     @media (max-width: 420px) {
       .game-container {
         padding: 10px 8px 14px;
-        max-height: calc(100dvh - 20px);
-        overflow-y: auto;
-        border-radius: 28px 28px 18px 18px;
+        height: calc(100vh - 12px);
+        height: calc(100dvh - 12px);
+        max-height: calc(100vh - 12px);
+        max-height: calc(100dvh - 12px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 22px 22px 16px 16px;
       }
       body {
         padding: 4px;
+        align-items: flex-start;
       }
       .header h1 {
         font-size: 1.15rem;
@@ -899,14 +905,17 @@
       .header {
         margin-bottom: 6px;
         gap: 4px;
+        flex: 0 0 auto;
       }
       .preview-bar {
         margin: 2px 0 6px 0;
         height: 6px;
+        flex: 0 0 auto;
       }
       .info-row {
         margin-bottom: 6px;
         font-size: 0.72rem;
+        flex: 0 0 auto;
       }
       .btn {
         padding: 7px 10px;
@@ -917,17 +926,21 @@
       .actions {
         gap: 6px;
         margin-top: 6px;
+        flex: 0 0 auto;
       }
-      /* 卡片紧凑化：去正方形，改矮卡片 */
+      /* 卡片紧凑化：去正方形，高度由网格 1fr 行均分，保证一屏内 */
       .card {
         aspect-ratio: auto;
+        height: 100%;
         min-height: 0;
       }
       .card-inner {
+        height: 100%;
         border-radius: 14px;
         box-shadow: 0 4px 12px rgba(80, 50, 110, 0.08);
       }
       .card-front, .card-back {
+        height: 100%;
         border-radius: 14px;
         padding: 4px;
       }
@@ -950,8 +963,13 @@
         font-size: 0.65rem;
       }
       .grid {
+        flex: 1 1 auto;
+        min-height: 0;
         gap: 8px;
-        margin: 4px 0 10px;
+        margin: 4px 0;
+        grid-auto-rows: minmax(0, 1fr);
+        align-content: stretch;
+        overflow: hidden;
       }
       .level-badge {
         padding: 4px 10px;
