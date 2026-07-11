@@ -202,6 +202,10 @@
       transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(80, 50, 110, 0.10);
+      pointer-events: none;            /* 关键修复：翻转面不参与命中测试，
+                                         避免 iOS/Safari 对 3D 变换子元素
+                                         (rotateY + perspective) 的命中区上移，
+                                         触发区严格等于 .card 的 2D 方框 */
     }
 
     .card.flipped .card-inner,
@@ -227,6 +231,8 @@
       background: white;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
       transition: opacity 0.25s ease;
+      pointer-events: none;            /* 双重保险：正/背面均不接收事件，
+                                         所有点击/长按统一落在 .card 上 */
     }
 
     /* 用 opacity 控制正/背面可见性，彻底避开 preserve-3d + backface-visibility
