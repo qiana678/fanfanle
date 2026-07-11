@@ -73,6 +73,19 @@
       color: #4d2e6b;
     }
 
+    /* 品牌区：logo 单独成元素，脱离 h1 的 background-clip:text 渐变裁剪
+       （否则 iOS/Safari 上 emoji 会被裁成透明而“不显示”） */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .logo-mark {
+      font-size: 1.5rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(120, 80, 180, 0.25));
+    }
+
     .header-right {
       display: flex;
       align-items: center;
@@ -157,6 +170,8 @@
       cursor: pointer;
       border-radius: 20px;
       transition: transform 0.15s ease, box-shadow 0.2s;
+      touch-action: manipulation;            /* 避免移动端 300ms 点击延迟与坐标漂移 */
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* 稳定方块：用 padding-bottom 撑出高度，不依赖 aspect-ratio，
@@ -168,8 +183,10 @@
       padding-bottom: 100%;
     }
 
+    /* 关键修复：移动端大卡片（2×2 首行）点按位移导致触发区错位——
+       移除 :active 的 transform 缩放（会移动命中框），改用亮度反馈，命中区与卡片始终完全重合 */
     .card:active {
-      transform: scale(0.96);
+      filter: brightness(0.95);
     }
 
     .card-inner {
@@ -228,6 +245,10 @@
       font-size: 1rem;
       letter-spacing: -0.2px;
       color: #2d1b3d;
+      line-height: 1.15;
+      max-width: 100%;
+      word-break: break-word;        /* 长单词换行，始终留在卡片内 */
+      overflow: hidden;
     }
 
     .card-front .word-zh {
@@ -238,6 +259,10 @@
       padding: 2px 12px;
       border-radius: 30px;
       margin-top: 3px;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;     /* 过长中文 pill 截断，不溢出卡片 */
     }
 
     .card-front .speaker-icon {
@@ -932,6 +957,12 @@
         font-size: 0.62rem;
         padding: 2px 7px;
       }
+      .brand {
+        gap: 4px;
+      }
+      .logo-mark {
+        font-size: 1.25rem;
+      }
       .level-badge {
         padding: 3px 9px;
         font-size: 0.65rem;
@@ -971,15 +1002,16 @@
         padding: 3px;
       }
       .card-front .emoji-big {
-        font-size: 1.6rem;
+        font-size: 1.3rem;
         line-height: 1;
         margin-bottom: 1px;
       }
       .card-front .word-en {
-        font-size: 0.72rem;
+        font-size: 0.62rem;
+        line-height: 1.1;
       }
       .card-front .word-zh {
-        font-size: 0.55rem;
+        font-size: 0.5rem;
         padding: 1px 6px;
         margin-top: 1px;
       }
@@ -1099,7 +1131,10 @@
   <!-- 主游戏容器 -->
   <div class="game-container" id="app">
     <div class="header">
-      <h1>📚 翻翻乐 <small>外研</small></h1>
+      <div class="brand">
+        <span class="logo-mark">📚</span>
+        <h1>翻翻乐 <small>外研</small></h1>
+      </div>
       <div class="header-right">
         <span class="grade-badge" id="gradeBadge">📖 三年级·上</span>
         <span class="level-badge" id="levelDisplay">Lv.1 · 2对 (4张)</span>
@@ -7676,7 +7711,7 @@
           } else {
             front.innerHTML = `
               <div class="emoji-big">${w.emoji}</div>
-              <div class="word-en" style="font-size:1.1rem;">${w.zh}</div>
+              <div class="word-en" style="font-size:0.92rem;">${w.zh}</div>
               <div class="word-zh" style="background:#dcc4ee;">${w.en}</div>
               <span class="speaker-icon">🔊</span>
             `;
