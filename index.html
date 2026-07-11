@@ -54,17 +54,21 @@
     .header h1 {
       font-size: 1.7rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #6b4c8a, #a77bcb);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
       letter-spacing: -0.5px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: #5a3d8a;                 /* 实色兜底：任何浏览器（含 iOS/Safari）都可见 */
+    }
+    /* 仅在支持 background-clip:text 的浏览器上才用渐变文字，避免移动端文字变透明消失 */
+    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+      .header h1 {
+        background: linear-gradient(135deg, #6b4c8a, #a77bcb);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+      }
     }
 
-    .header h1 small {
+    .brand-badge {
       font-size: 0.8rem;
       font-weight: 600;
       background: rgba(160, 120, 200, 0.2);
@@ -196,18 +200,16 @@
       height: 100%;
       text-align: center;
       transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-      -webkit-transform-style: preserve-3d;   /* iOS Safari 必须带前缀，否则 3D 翻转塌成平面、正背面重叠 */
-      transform-style: preserve-3d;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(80, 50, 110, 0.10);
     }
 
-    .card.flipped .card-inner {
+    .card.flipped .card-inner,
+    .card.matched .card-inner {
       transform: rotateY(180deg);
     }
 
     .card.matched .card-inner {
-      transform: rotateY(180deg);
       box-shadow: 0 0 0 3px #b28ad9, 0 8px 24px rgba(130, 80, 180, 0.20);
     }
 
@@ -216,8 +218,6 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      -webkit-backface-visibility: hidden;   /* iOS Safari / 移动端 WebView 必须带前缀，否则背面穿透导致正面内容错乱 */
-      backface-visibility: hidden;
       border-radius: 20px;
       display: flex;
       flex-direction: column;
@@ -226,12 +226,27 @@
       padding: 6px;
       background: white;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      transition: opacity 0.25s ease;
     }
 
+    /* 用 opacity 控制正/背面可见性，彻底避开 preserve-3d + backface-visibility
+       在 iOS/Safari 上导致“点击命中区偏移”的经典 bug —— .card 始终保持干净的 2D 命中框 */
     .card-front {
       transform: rotateY(180deg);
       background: white;
       color: #2d1b3d;
+      opacity: 0;
+    }
+    .card-back {
+      opacity: 1;
+    }
+    .card.flipped .card-front,
+    .card.matched .card-front {
+      opacity: 1;
+    }
+    .card.flipped .card-back,
+    .card.matched .card-back {
+      opacity: 0;
     }
 
     .card-front .emoji-big {
@@ -1133,7 +1148,7 @@
     <div class="header">
       <div class="brand">
         <span class="logo-mark">📚</span>
-        <h1>翻翻乐 <small>外研</small></h1>
+        <h1>翻翻乐</h1><small class="brand-badge">外研</small>
       </div>
       <div class="header-right">
         <span class="grade-badge" id="gradeBadge">📖 三年级·上</span>
