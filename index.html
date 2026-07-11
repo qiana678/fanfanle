@@ -177,7 +177,10 @@
          去掉 perspective 后翻转退化为纯 2D，命中框与可视卡片严格重合。 */
       border-radius: 20px;
       transition: transform 0.15s ease, box-shadow 0.2s;
-      touch-action: manipulation;            /* 避免移动端 300ms 点击延迟与坐标漂移 */
+      /* 长按加入词库：关掉浏览器默认平移/缩放(页面本就一屏不可滚)，
+         并把 iOS 长按呼出菜单关掉，否则长按被菜单打断、定时器被清掉 */
+      touch-action: none;
+      -webkit-touch-callout: none;        /* 阻止 iOS 长按呼出“拷贝/查询”菜单打断手势 */
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -7749,14 +7752,22 @@
           cardDiv.appendChild(inner);
           gridEl.appendChild(cardDiv);
 
-          // 长按相关：仅用 pointer 事件（pointer 已统一覆盖 mouse/touch），避免重复计时器
+          // 长按加入词库：用位移阈值替代敏感的 pointerleave，并拦截
+          // iOS 的 contextmenu(长按呼出菜单)以免打断手势。touch-action:none
+          // 已在 .card 上关掉浏览器默认平移/缩放，长按判定更稳健。
           let longPressTimer = null;
           let suppressClick = false;
-          const startLongPress = () => {
+          let lpX = 0, lpY = 0;
+          const MOVE_TOLERANCE = 14;   // 手指漂移超过此像素数才视为“移动”，取消长按
+
+          const startLongPress = (e) => {
             suppressClick = false;
+            lpX = e.clientX; lpY = e.clientY;
             clearTimeout(longPressTimer);
             longPressTimer = setTimeout(() => {
+              longPressTimer = null;
               suppressClick = true;
+              if (navigator.vibrate) navigator.vibrate(30); // 触发反馈
               handleLongPress(index);
             }, LONG_PRESS_MS);
           };
@@ -7764,15 +7775,21 @@
             clearTimeout(longPressTimer);
             longPressTimer = null;
           };
+          const moveLongPress = (e) => {
+            if (!longPressTimer) return;
+            if (Math.hypot(e.clientX - lpX, e.clientY - lpY) > MOVE_TOLERANCE) cancelLongPress();
+          };
 
           cardDiv.addEventListener('click', () => {
             if (suppressClick) { suppressClick = false; return; } // 抑制长按后的误触
             onCardClick(index);
           });
           cardDiv.addEventListener('pointerdown', startLongPress);
+          cardDiv.addEventListener('pointermove', moveLongPress);
           cardDiv.addEventListener('pointerup', cancelLongPress);
-          cardDiv.addEventListener('pointerleave', cancelLongPress);
           cardDiv.addEventListener('pointercancel', cancelLongPress);
+          // 阻止 iOS 长按呼出“拷贝/查询”菜单 —— 它会中断手势、清掉长按定时器
+          cardDiv.addEventListener('contextmenu', (e) => e.preventDefault());
         });
 
         // 统一根据预览状态 / 已配对状态设置翻面
