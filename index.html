@@ -170,8 +170,11 @@
 
     .card {
       position: relative;
-      perspective: 800px;
       cursor: pointer;
+      /* 注意：此处刻意不放 perspective —— iOS/Safari 下 perspective 会让
+         内部 rotateY(180deg) 翻转面被 3D 投影位移，导致“可见卡片”
+         比 .card 的 2D 命中框低一整张卡片高度（触发区跑到卡片上方）。
+         去掉 perspective 后翻转退化为纯 2D，命中框与可视卡片严格重合。 */
       border-radius: 20px;
       transition: transform 0.15s ease, box-shadow 0.2s;
       touch-action: manipulation;            /* 避免移动端 300ms 点击延迟与坐标漂移 */
