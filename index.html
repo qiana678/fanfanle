@@ -1192,7 +1192,7 @@
         <span style="font-weight:400; font-size:0.7rem; opacity:0.6;" id="wordCount">0</span>
       </div>
       <div class="wordbank-tags" id="wordbankTags">
-        <span class="wordbank-empty">长按已配对卡片添加 ✨</span>
+        <span class="wordbank-empty">双击已配对卡片添加 ✨</span>
       </div>
       <div class="backend-status" style="margin-top:10px; justify-content:center;">
         <span class="dot online" id="statusDot"></span>
@@ -1284,7 +1284,8 @@
       // 0. 全局常量
       // ==============================================================
       const PREVIEW_SECONDS = 20;   // 记忆时间（唯一来源，避免魔法数字）
-      const LONG_PRESS_MS = 600;    // 长按阈值
+      const LONG_PRESS_MS = 600;    // 词库标签长按删除阈值
+      const DOUBLE_TAP_MS = 320;    // 双击/双触加入词库的时间窗
 
       // ==============================================================
       // 1. 后端词库接口定义 (模拟 RESTful API)
@@ -7752,43 +7753,23 @@
           cardDiv.appendChild(inner);
           gridEl.appendChild(cardDiv);
 
-          // 长按加入词库：用位移阈值替代敏感的 pointerleave，并拦截
-          // iOS 的 contextmenu(长按呼出菜单)以免打断手势。touch-action:none
-          // 已在 .card 上关掉浏览器默认平移/缩放，长按判定更稳健。
-          let longPressTimer = null;
-          let suppressClick = false;
-          let lpX = 0, lpY = 0;
-          const MOVE_TOLERANCE = 14;   // 手指漂移超过此像素数才视为“移动”，取消长按
-
-          const startLongPress = (e) => {
-            suppressClick = false;
-            lpX = e.clientX; lpY = e.clientY;
-            clearTimeout(longPressTimer);
-            longPressTimer = setTimeout(() => {
-              longPressTimer = null;
-              suppressClick = true;
-              if (navigator.vibrate) navigator.vibrate(30); // 触发反馈
-              handleLongPress(index);
-            }, LONG_PRESS_MS);
-          };
-          const cancelLongPress = () => {
-            clearTimeout(longPressTimer);
-            longPressTimer = null;
-          };
-          const moveLongPress = (e) => {
-            if (!longPressTimer) return;
-            if (Math.hypot(e.clientX - lpX, e.clientY - lpY) > MOVE_TOLERANCE) cancelLongPress();
-          };
+          // 双击(双击/双触)加入词库：用两次 click 的时间差判定。
+          // 不用 dblclick —— 移动端(尤其 iOS Safari) dblclick 触发出不准，
+          // 而 click 在触摸下必然触发，自管时间窗两平台都稳。
+          let lastTapTime = 0;
 
           cardDiv.addEventListener('click', () => {
-            if (suppressClick) { suppressClick = false; return; } // 抑制长按后的误触
+            const now = Date.now();
+            if (now - lastTapTime < DOUBLE_TAP_MS) {
+              // 第二次点击落在阈值内 → 双击（双触）加入词库
+              lastTapTime = 0;
+              handleDoubleTapAdd(index);
+              return;
+            }
+            lastTapTime = now;
             onCardClick(index);
           });
-          cardDiv.addEventListener('pointerdown', startLongPress);
-          cardDiv.addEventListener('pointermove', moveLongPress);
-          cardDiv.addEventListener('pointerup', cancelLongPress);
-          cardDiv.addEventListener('pointercancel', cancelLongPress);
-          // 阻止 iOS 长按呼出“拷贝/查询”菜单 —— 它会中断手势、清掉长按定时器
+          // 阻止 iOS 长按文本呼出“拷贝/查询”菜单，避免干扰双触手感
           cardDiv.addEventListener('contextmenu', (e) => e.preventDefault());
         });
 
@@ -7806,13 +7787,14 @@
         });
       }
 
-      function handleLongPress(index) {
+      function handleDoubleTapAdd(index) {
         const card = state.cards[index];
         if (state.isPreview) return; // 预览期仅用于听音，不触发加入词库
         if (!card || !card.matched) {
           showToast('⚠️ 只有已配对的卡片才能加入词库', 1000);
           return;
         }
+        if (navigator.vibrate) navigator.vibrate(30); // 双击反馈
         addWordToCustom(card.wordId);
       }
 
@@ -7935,7 +7917,7 @@
         const ids = state.customWordIds;
         wordCount.textContent = ids.length;
         if (ids.length === 0) {
-          wordbankTags.innerHTML = '<span class="wordbank-empty">长按已配对卡片添加 ✨</span>';
+          wordbankTags.innerHTML = '<span class="wordbank-empty">双击已配对卡片添加 ✨</span>';
           return;
         }
         try {
@@ -7965,7 +7947,7 @@
         const ids = state.customWordIds;
 
         if (ids.length === 0) {
-          libraryGrid.innerHTML = '<div class="library-empty">📭 词库为空，长按游戏中的配对卡片添加</div>';
+          libraryGrid.innerHTML = '<div class="library-empty">📭 词库为空，双击游戏中的配对卡片添加</div>';
           exitDeleteMode();
           return;
         }
