@@ -1091,6 +1091,8 @@
       .library-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
+        min-width: 0;            /* 允许列收缩，避免长单词撑出横向滚动 */
+        overflow-x: hidden;
       }
       .library-card .emoji {
         font-size: 1.9rem;
@@ -1128,6 +1130,31 @@
       word-break: break-word;
     }
     #unitWordsGrid .library-card .zh {
+      font-size: 0.6rem;
+      padding: 1px 8px;
+      margin-top: 3px;
+    }
+
+    /* 我的词库页：与单元单词页同款处理——
+       卡片 min-width:0 才允许列收缩（否则长英文单词撑出横向滚动），
+        aspect-ratio 改 auto + min-height 让卡片更紧凑、纵向滚动更顺。 */
+    #libraryGrid .library-card {
+      min-width: 0;
+      padding: 10px 4px;
+      aspect-ratio: auto;
+      min-height: 88px;
+    }
+    #libraryGrid .library-card .emoji {
+      font-size: 1.9rem;
+      margin-bottom: 2px;
+    }
+    #libraryGrid .library-card .en {
+      font-size: 0.78rem;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    #libraryGrid .library-card .zh {
       font-size: 0.6rem;
       padding: 1px 8px;
       margin-top: 3px;
