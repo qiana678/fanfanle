@@ -152,11 +152,20 @@
     }
 
     .card {
-      aspect-ratio: 1 / 1;
+      position: relative;
       perspective: 800px;
       cursor: pointer;
       border-radius: 20px;
       transition: transform 0.15s ease, box-shadow 0.2s;
+    }
+
+    /* 稳定方块：用 padding-bottom 撑出高度，不依赖 aspect-ratio，
+       在 grid + 绝对定位卡面下任何浏览器都 100% 可靠（同单元单词卡片方案） */
+    .card::before {
+      content: '';
+      display: block;
+      width: 100%;
+      padding-bottom: 100%;
     }
 
     .card:active {
@@ -164,7 +173,8 @@
     }
 
     .card-inner {
-      position: relative;
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       text-align: center;
@@ -946,9 +956,8 @@
         font-size: 0.58rem;
       }
 
-      /* ===== 卡片：正方形，尺寸由列宽决定 ===== */
+      /* ===== 卡片：方块由 ::before padding-bottom 撑出，移动端 100% 可靠 ===== */
       .card {
-        aspect-ratio: 1 / 1;
         border-radius: 14px;
       }
       .card-inner {
@@ -981,11 +990,12 @@
         font-size: 1.4rem;
       }
 
-      /* ===== 网格：不自适应撑高，让卡片自然排列 ===== */
+      /* ===== 网格：手机端强制 4 列，最密关卡也只有 4 行，保证一屏装下 ===== */
       .grid {
         flex: 1 1 auto;
         min-height: 0;
-        gap: 7px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
         margin: 2px 0;
         overflow-y: auto;
         overflow-x: hidden;
