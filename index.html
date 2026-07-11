@@ -179,6 +179,7 @@
       height: 100%;
       text-align: center;
       transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      -webkit-transform-style: preserve-3d;   /* iOS Safari 必须带前缀，否则 3D 翻转塌成平面、正背面重叠 */
       transform-style: preserve-3d;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(80, 50, 110, 0.10);
@@ -198,6 +199,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
+      -webkit-backface-visibility: hidden;   /* iOS Safari / 移动端 WebView 必须带前缀，否则背面穿透导致正面内容错乱 */
       backface-visibility: hidden;
       border-radius: 20px;
       display: flex;
