@@ -253,11 +253,12 @@
     }
 
     .card-back {
-      background: linear-gradient(145deg, #dcc4ee, #c2a5dd);
+      background-color: #ccaad9;
+      background-image: linear-gradient(145deg, #dcc4ee, #c2a5dd),
+        radial-gradient(circle at 30% 30%, rgba(240, 228, 254, 0.8) 2px, transparent 2px),
+        radial-gradient(circle at 70% 80%, rgba(240, 228, 254, 0.8) 2px, transparent 2px);
+      background-size: cover, 40px 40px, 40px 40px;
       transform: rotateY(0deg);
-      background-image: radial-gradient(circle at 30% 30%, #f0e4fe 2px, transparent 2px),
-        radial-gradient(circle at 70% 80%, #f0e4fe 2px, transparent 2px);
-      background-size: 40px 40px;
       border: 1px solid #e8d7f5;
     }
 
@@ -883,66 +884,76 @@
       animation: pulse 1s infinite;
     }
 
-    @media (max-width: 420px) {
+        @media (max-width: 420px) {
+      /* ===== 手机端：游戏区域锁定在一屏内 ===== */
+      html, body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        padding: 0;
+        align-items: stretch;
+        justify-content: flex-start;
+      }
       .game-container {
-        padding: 10px 8px 14px;
-        height: calc(100vh - 12px);
-        height: calc(100dvh - 12px);
-        max-height: calc(100vh - 12px);
-        max-height: calc(100dvh - 12px);
+        padding: 8px 8px 10px;
+        height: 100%;
+        max-height: 100%;
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        border-radius: 22px 22px 16px 16px;
-      }
-      body {
-        padding: 4px;
-        align-items: flex-start;
-      }
-      .header h1 {
-        font-size: 1.15rem;
+        border-radius: 16px 16px 12px 12px;
+        box-sizing: border-box;
       }
       .header {
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         gap: 4px;
+        padding: 0 2px;
+        flex: 0 0 auto;
+      }
+      .header h1 {
+        font-size: 1.05rem;
+      }
+      .header h1 small {
+        font-size: 0.65rem;
+        padding: 2px 8px;
+      }
+      .level-badge {
+        padding: 3px 10px;
+        font-size: 0.68rem;
+        flex: 0 0 auto;
+      }
+      .grade-badge {
+        padding: 3px 10px;
+        font-size: 0.65rem;
         flex: 0 0 auto;
       }
       .preview-bar {
-        margin: 2px 0 6px 0;
-        height: 6px;
+        margin: 2px 0 4px 0;
+        height: 5px;
         flex: 0 0 auto;
       }
       .info-row {
-        margin-bottom: 6px;
-        font-size: 0.72rem;
+        margin-bottom: 4px;
+        font-size: 0.68rem;
+        padding: 0 2px;
         flex: 0 0 auto;
       }
-      .btn {
-        padding: 7px 10px;
-        font-size: 0.72rem;
-        min-width: 52px;
-        border-radius: 40px;
+      .info-row span {
+        padding: 2px 8px;
+        font-size: 0.62rem;
       }
-      .actions {
-        gap: 6px;
-        margin-top: 6px;
-        flex: 0 0 auto;
-      }
-      /* 卡片紧凑化：去正方形，高度由网格 1fr 行均分，保证一屏内 */
+      /* 卡片保持正方形（防止高度塌缩），由 grid 列宽自然决定尺寸 */
       .card {
-        aspect-ratio: auto;
-        height: 100%;
-        min-height: 0;
+        aspect-ratio: 1 / 1;
       }
       .card-inner {
-        height: 100%;
-        border-radius: 14px;
-        box-shadow: 0 4px 12px rgba(80, 50, 110, 0.08);
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(80, 50, 110, 0.08);
       }
       .card-front, .card-back {
-        height: 100%;
-        border-radius: 14px;
-        padding: 4px;
+        border-radius: 12px;
+        padding: 2px;
       }
       .card-front .emoji-big {
         font-size: 1.5rem;
@@ -950,44 +961,52 @@
         margin-bottom: 1px;
       }
       .card-front .word-en {
-        font-size: 0.78rem;
+        font-size: 0.72rem;
       }
       .card-front .word-zh {
-        font-size: 0.58rem;
-        padding: 1px 8px;
-        margin-top: 2px;
+        font-size: 0.55rem;
+        padding: 1px 7px;
+        margin-top: 1px;
       }
       .card-front .speaker-icon {
-        bottom: 3px;
-        right: 4px;
-        font-size: 0.65rem;
+        bottom: 2px;
+        right: 3px;
+        font-size: 0.6rem;
       }
+      .card-back::after {
+        font-size: 1.4rem;
+      }
+      /* 网格占满剩余空间 */
       .grid {
         flex: 1 1 auto;
         min-height: 0;
-        gap: 8px;
-        margin: 4px 0;
-        grid-auto-rows: minmax(0, 1fr);
-        align-content: stretch;
+        gap: 6px;
+        margin: 2px 0;
         overflow: hidden;
       }
-      .level-badge {
-        padding: 4px 10px;
-        font-size: 0.7rem;
+      /* 操作按钮区 */
+      .actions {
+        gap: 6px;
+        margin-top: 4px;
+        flex: 0 0 auto;
       }
-      .grade-badge {
-        padding: 4px 10px;
+      .btn {
+        padding: 6px 10px;
         font-size: 0.68rem;
+        min-width: 48px;
+        border-radius: 40px;
       }
+
+      /* 单元单词页 */
       .library-grid {
         grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+        gap: 10px;
       }
       .library-card .emoji {
-        font-size: 2.2rem;
+        font-size: 1.9rem;
       }
       .grade-modal-content {
-        padding: 20px 16px;
+        padding: 16px 14px;
       }
     }
 
