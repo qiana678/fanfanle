@@ -990,11 +990,11 @@
         font-size: 1.4rem;
       }
 
-      /* ===== 网格：手机端强制 4 列，最密关卡也只有 4 行，保证一屏装下 ===== */
+      /* ===== 网格：列数交由 grid-2 / grid-4 类决定（每局自适应），
+         自身只负责弹性与滚动；卡片用 ::before 撑方块，永不拉伸 ===== */
       .grid {
-        flex: 1 1 auto;
+        flex: 0 1 auto;           /* 按内容高度紧凑排在顶部，极端矮屏才收缩 */
         min-height: 0;
-        grid-template-columns: repeat(4, 1fr);
         gap: 6px;
         margin: 2px 0;
         overflow-y: auto;
@@ -1014,6 +1014,16 @@
         font-size: 0.68rem;
         min-width: 48px;
         border-radius: 40px;
+      }
+
+      /* 词库面板：随每局卡片多少弹性伸缩——
+         卡片少（4张）则展开填充底部留白，卡片多（16张）则收缩并内部滚动，
+         与顶部功能区一起把配对区“兼容”地包在中间 */
+      .wordbank-panel {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        margin-top: 8px;
       }
 
       /* 单元单词页 */
@@ -1090,7 +1100,7 @@
       <h1>📚 翻翻乐 <small>外研</small></h1>
       <div class="header-right">
         <span class="grade-badge" id="gradeBadge">📖 三年级·上</span>
-        <span class="level-badge" id="levelDisplay">Lv.1 · 3对</span>
+        <span class="level-badge" id="levelDisplay">Lv.1 · 2对 (4张)</span>
       </div>
     </div>
 
@@ -1099,7 +1109,7 @@
     </div>
     <div class="info-row">
       <span id="statusText">👀 记忆时间 20s</span>
-      <span id="pairCounter">✅ 0 / 3</span>
+      <span id="pairCounter">✅ 0 / 2</span>
     </div>
 
     <div id="gridContainer" class="grid grid-3"></div>
@@ -7396,7 +7406,7 @@
         semester: 1,
         selectedUnits: ['all'],
         level: 1,
-        pairsCount: 3,
+        pairsCount: 2,
         cards: [],
         selected: [],
         locked: false,
@@ -7439,15 +7449,15 @@
         return arr;
       }
 
+      // 每局卡片数量：4 / 8 / 12 / 16 张（即 2 / 4 / 6 / 8 对）
       function getPairsByLevel(level) {
-        const map = { 1: 3, 2: 4, 3: 6, 4: 8 };
-        return map[level] || 3;
+        const map = { 1: 2, 2: 4, 3: 6, 4: 8 };
+        return map[level] || 2;
       }
 
+      // 4张→2列(2×2)；8/12/16张→4列(4×2 / 4×3 / 4×4)
       function getGridClass(pairs) {
-        if (pairs <= 3) return 'grid-3';
-        if (pairs === 4) return 'grid-4';
-        if (pairs <= 6) return 'grid-3';
+        if (pairs <= 2) return 'grid-2';
         return 'grid-4';
       }
 
@@ -7602,8 +7612,9 @@
 
         const poolSize = state.currentWordPool.length;
         const maxPairs = Math.floor(poolSize / 2);
+        const cardCount = state.pairsCount * 2;
         levelDisplay.textContent =
-          `Lv.${level} · ${state.pairsCount}对 (共${poolSize}词)` +
+          `Lv.${level} · ${state.pairsCount}对 (${cardCount}张)` +
           (state.pairsCount < maxPairs ? ` · 已收敛` : '');
         updatePairCounter();
         statusText.textContent = `👀 记忆时间 ${PREVIEW_SECONDS}s`;
