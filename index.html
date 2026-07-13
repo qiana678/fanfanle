@@ -1028,6 +1028,36 @@
         border-radius: 14px;
         padding: 3px;
       }
+
+      /* ===== 移动端翻牌：彻底不用任何 transform/3D（iOS/Safari 命中区偏移的根因）
+         桌面端保留 rotateY 翻转动效；移动端仅用 opacity 交叉淡入淡出替代。
+         .card 自身永远保持纯净 2D 盒模型 —— 命中框 = 可视卡片，零偏移。 ===== */
+      .card-inner {
+        transition: opacity 0.3s ease;   /* 移动端：只过渡透明度 */
+        transform: none !important;         /* 强制清除任何 rotateY/3D 变换 */
+      }
+      .card.flipped .card-inner,
+      .card.matched .card-inner {
+        transform: none !important;
+      }
+
+      /* 正/背面：移除所有 transform，只用 opacity 控制显隐 */
+      .card-front {
+        transform: none !important;
+        opacity: 0;
+      }
+      .card-back {
+        transform: none !important;
+        opacity: 1;
+      }
+      .card.flipped .card-front,
+      .card.matched .card-front {
+        opacity: 1;
+      }
+      .card.flipped .card-back,
+      .card.matched .card-back {
+        opacity: 0;
+      }
       .card-front .emoji-big {
         font-size: 1.3rem;
         line-height: 1;
@@ -1052,14 +1082,12 @@
       }
 
       /* ===== 网格：列数交由 grid-2 / grid-4 类决定（每局自适应），
-         自身只负责弹性与滚动；卡片用 ::before 撑方块，永不拉伸 ===== */
+         自身只负责紧凑排列；卡片用 ::before 撑方块，永不拉伸 ===== */
       .grid {
-        flex: 0 1 auto;           /* 按内容高度紧凑排在顶部，极端矮屏才收缩 */
-        min-height: 0;
+        flex: 0 0 auto;           /* 严格按内容高度，绝不伸展/收缩 */
         gap: 6px;
-        margin: 2px 0;
-        overflow-y: auto;
-        overflow-x: hidden;
+        margin: 0;                /* 移除上下 margin，消除与预览栏之间的空白 */
+        overflow: hidden;          /* 不滚动，直接裁切（游戏一屏装下） */
         align-content: start;       /* 行不拉伸，从顶部开始 */
         align-items: start;          /* 卡片不拉伸 */
       }
